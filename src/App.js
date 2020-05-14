@@ -24,6 +24,7 @@ class App extends Component {
         thisUserPassword: '',
         avatar: '',
         avatarPath: '',
+        branches: [],
         page: 0,
         correctLogin: false,
         book: '',
@@ -181,9 +182,6 @@ class App extends Component {
         }
         const body = await response.json();
 
-        //var reader = new FileReader();
-        //reader.read
-        //this.canvasRef.current.getContext("2d");
         this.loaded = false;
         let avatar = body.avatar !== null && body.avatar !== '' && body.avatar !== undefined
             ? new Blob([this.makeUint8Array(body.avatar)], {type: 'image/png'})
@@ -219,17 +217,11 @@ class App extends Component {
         }
     };
 
-    async onGetAllRequests(){
-        const response = await fetch('/requestsAllGet', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ login: this.state.thisUserLogin }),
-        });
+    async onGetAllBranches(){
+        const response = await fetch('/getAllBranches');
         const body = await response.json();
 
-        this.setState({requests: body.express})
+        this.setState({branches: body.express});
     }
 
     onExitButtonClick = async e => {
@@ -267,14 +259,14 @@ class App extends Component {
     };
     validateDate(value)
     {
-        var arrD = value.split(".");
+        console.log('value' + value);
+        let arrD = value.split(value.includes('.') ? '.' : '-');
         arrD[1] -= 1;
-        var d = new Date(arrD[2], arrD[1], arrD[0]);
-        if ((d.getFullYear() == arrD[2]) && (d.getMonth() == arrD[1]) && (d.getDate() == arrD[0])) {
-            return true;
-        } else {
-            return false;
-        }
+        let d = new Date(arrD[0], arrD[1], arrD[2]);
+
+        return (d.getFullYear() === Number(arrD[0])) &&
+            (d.getMonth() === Number(arrD[1])) &&
+            (d.getDate() === Number(arrD[2]));
     }
     onRequestAccess = async e => {
         const response = await fetch('/requestAccess', {
@@ -400,6 +392,19 @@ class App extends Component {
         await response.json();
         this.onGetAllRequests();
     };
+
+    async onGetAllRequests(){
+        const response = await fetch('/requestsAllGet', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ login: this.state.thisUserLogin }),
+        });
+        const body = await response.json();
+
+        this.setState({requests: body.express})
+    }
 
     onPersonPageDataChange = async e =>{
         e.preventDefault();
@@ -725,6 +730,7 @@ class App extends Component {
             else if (this.state.page === 6){
                 if (!this.loaded){
                     this.onGetAllRequests();
+                    this.onGetAllBranches();
                     this.loaded = true;
                 }
                 return(
@@ -788,6 +794,7 @@ class App extends Component {
                     </div>);
             }
             else if (this.state.page === 7){
+                console.log(this.state.branch);
                 return(
                     <div className="PersonsChangePage">
                         <form onSubmit={this.onPersonPageDataChange}>
@@ -868,11 +875,24 @@ class App extends Component {
                             <p>
                                 <strong>Branch:</strong>
                             </p>
-                            <input
-                                type="text"
-                                value={this.state.branch === null ? '' : this.state.branch}
-                                onChange={e => this.setState({branch: e.target.value})}
-                            />
+                            <p>
+                                <select
+                                    defaultValue={this.state.branch !== '' && this.state.branch !== 'None'
+                                        ? this.state.branch
+                                        : ''
+                                    }
+                                    onChange={e => this.setState({branch: e.target.value})}
+                                >
+                                    <option disabled>Choose branch...</option>
+                                    <option value={'None'} key={-1}>None</option>
+                                    {this.state.branches === [] || this.state.branches === null || this.state.branches === undefined
+                                        ? ''
+                                        : this.state.branches.map(item => {
+                                                return <option value={item[1]} key={item[0]}>{item[1]}</option>
+                                        })
+                                    }
+                                </select>
+                            </p>
                             <p>
                                 <strong>Position:</strong>
                             </p>

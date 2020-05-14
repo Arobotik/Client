@@ -23,7 +23,14 @@ class AdminApp extends Component {
         adminPassword: '',
         avatar: '',
         avatarPath: '',
+        branches: null,
+        editedBranch: -1,
+        editedBranchData: '',
+        toDeleteBranch: -1,
+        branchesWereEdited: false,
         page: 0,
+        deleted: false,
+        getDeleted: false,
     };
 
     loaded = false;
@@ -63,6 +70,7 @@ class AdminApp extends Component {
 
     onBackButtonClick = async e => {
         e.preventDefault();
+        this.loaded = false;
         this.setState({page: this.state.page - 1});
     };
 
@@ -93,6 +101,7 @@ class AdminApp extends Component {
             hideYear: body.hideYear,
             hidePhones: body.hidePhones,
             about: body.about,
+            deleted: body.deleted,
             avatar: avatar,
             avatarPath: avatar !== '' ? URL.createObjectURL(avatar) : '',
             page: 2,
@@ -101,13 +110,13 @@ class AdminApp extends Component {
         });
     };
 
-    async onBookAllGet(){
+    async onBookAllGet(deleted = false){
         const response = await fetch('/bookAllGetByAdmin', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({login: this.state.adminLogin, password: this.state.adminPassword}),
+            body: JSON.stringify({login: this.state.adminLogin, password: this.state.adminPassword, deleted: deleted}),
         });
         const body = await response.json();
         if (response.status !== 200) throw Error(body.message);
@@ -135,7 +144,22 @@ class AdminApp extends Component {
             canvas.current.changeImage(this.state.avatarPath);
         }
     };
-
+    async onDeleteUser(deleted){
+        await fetch('/deleteUser', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                login: this.state.thisUserLogin.toLowerCase(),
+                password: this.state.thisUserPassword,
+                deleted: deleted,
+            }),
+        }).then(()=>{
+            this.state.correctLogin = false;
+            this.setState({deleted: deleted});
+        });
+    }
     onPersonPageDataChange = async e =>{
         e.preventDefault();
         alert('Successfully modified');
@@ -228,8 +252,43 @@ class AdminApp extends Component {
             thisUserPassword: '',
             page: 0,
             correctLogin: false,
+            deleted: false,
             oldLogin: '',
         });
+    };
+
+    onBranchesClick = async e =>{
+        const response =  await fetch('/getAllBranches');
+
+        const body = await response.json();
+        this.setState({branches: body.express,
+            page: 5,
+            loaded: true,
+            editedBranch: -1,
+            editedBranchData: '',
+            toDeleteBranch: -1,
+            branchesWereEdited: false,
+        });
+    };
+
+    confirmBranchEdit = async e =>{
+        await fetch('/updateBranches', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                branches: this.state.branches,
+                login: this.state.adminLogin,
+                password: this.state.adminPassword,
+            }),
+        }).then(() => this.setState({
+            loaded: false,
+            editedBranch: -1,
+            editedBranchData: '',
+            toDeleteBranch: -1,
+            branchesWereEdited: false,
+        }));
     };
 
     render() {
@@ -266,10 +325,11 @@ class AdminApp extends Component {
         else{
             if (this.state.page === 1){
                 if (!this.loaded){
-                    this.onBookAllGet();
+                    this.onBookAllGet(this.state.getDeleted);
                 }
                 return (
                     <div className="Book">
+                        <strong>{this.state.getDeleted ? 'Deleted users' : 'Undeleted users'}</strong>
                         {this.state.bookData === null || this.state.bookData === undefined
                             ? <strong>Wait</strong>
                             : <ul>{
@@ -281,6 +341,11 @@ class AdminApp extends Component {
                             }</ul>
                         }
                         <button onClick={this.onRequestsClick} type="button">Requests</button>
+                        <button onClick={() => {this.setState({getDeleted: !this.state.getDeleted,}); this.loaded = false;}}
+                                type="button">
+                            {this.state.getDeleted ? 'Get undeleted' : 'Get deleted'}
+                        </button>
+                        <button onClick={() => {this.setState({page: 5}); this.loaded = false;}} type="button">Branches</button>
                         <button onClick={this.onExitButtonClick} type="button">Exit</button>
                     </div>
                 )
@@ -325,7 +390,7 @@ class AdminApp extends Component {
                         <div className="PersonsPage">
                             <form onSubmit={this.onPersonPageDataChange}>
                                 <h1>
-                                    <strong>Registration:</strong>
+                                    <strong>Data change: {this.state.getDeleted ? '(Deleted)' : ''}</strong>
                                 </h1>
                                 <p>
                                     <strong>Login:</strong>
@@ -440,13 +505,18 @@ class AdminApp extends Component {
                                         this.setState({avatar: e.target.files[0], avatarPath: URL.createObjectURL(e.target.files[0])});
                                     }}
                                 />
-                                <button onClick={e => this.imageChange(this.canvasUserRef)} type="button">Load</button><br/>
+                                <button onClick={() => this.imageChange(this.canvasUserRef)} type="button">Load</button><br/>
                                 {
                                     this.state.avatarPath === ''
                                         ? <p>No avatar</p>
                                         : <Canvas avatarPath={this.state.avatarPath} ref={this.canvasUserRef}/>
                                 }
-                                <button type="submit">Continue</button>
+                                <button type="submit">Confirm</button>
+                                {
+                                    this.state.deleted
+                                        ? <button onClick={() => this.onDeleteUser(false)} type="button">Undelete</button>
+                                        : <button onClick={() => this.onDeleteUser(true)} type="button">Delete</button>
+                                }
                                 <button onClick={this.onBackButtonClick} type="button">Back</button>
                             </form>
                         </div>
@@ -455,8 +525,7 @@ class AdminApp extends Component {
             else if (this.state.page === 4){
                 let item = 0;
                 if (!this.loaded){
-                    this.onRequestsClick();
-                    this.loaded = true;
+                    this.onRequestsClick().then(()=>{this.loaded = true});
                 }
                 return(
                     <div>
@@ -510,6 +579,109 @@ class AdminApp extends Component {
                         }
                     </div>
                 )
+            }
+            else if (this.state.page === 5){
+                let item = -1;
+                if (!this.loaded){
+                    this.onBranchesClick().then(()=>{this.loaded = true});
+                }
+                if (this.state.toDeleteBranch !== -1){
+                    this.state.branches.splice(this.state.toDeleteBranch, 1);
+                }
+                return (
+                    <div>
+                        <button onClick={() => {
+                            let branches = this.state.branches;
+                            if (branches === null || branches === undefined){
+                                branches = [];
+                            }
+                            let editedBranch = this.state.editedBranch;
+                            if (editedBranch !== -1){
+                                if (this.state.editedBranchData !== ''){
+                                    branches[editedBranch][1] = this.state.editedBranchData;
+                                }
+                                else {
+                                    branches.splice(editedBranch, 1);
+                                }
+                            }
+                            branches.push([-1, '']);
+                            editedBranch = branches.length - 1;
+                            this.setState({
+                                editedBranch: editedBranch,
+                                editedBranchData: branches[editedBranch][1],
+                                branchesWereEdited: true,
+                                branches: branches,
+                                toDeleteBranch: -1,
+                            });
+                        }} type="button">Add</button><br/>
+                        <strong>Branches</strong>
+                        {this.state.branches === null || this.state.branches === undefined || this.state.branches === []
+                            ? 'None'
+                            : <table>{
+                                <tbody>
+                                <tr>
+                                    <td>
+                                        <b>Branch</b>
+                                    </td>
+                                    <td colSpan={3}>
+                                        <b>Action</b>
+                                    </td>
+                                </tr>
+                                {
+                                    this.state.branches.map(req => {
+                                        let thisItem = ++item;
+                                        return <tr key={thisItem}>
+                                            <td>
+                                                {this.state.editedBranch === thisItem
+                                                    ? <input
+                                                        type="text"
+                                                        value={this.state.editedBranchData}
+                                                        onChange={e => this.setState({editedBranchData: e.target.value})}
+                                                    />
+                                                    : req[1]
+                                                }
+                                            </td>
+                                            <td>
+                                                {
+                                                    this.state.editedBranch === thisItem
+                                                    ? <button onClick={() => {
+                                                        req[1] = this.state.editedBranchData;
+                                                        let editedBranch = this.state.editedBranch;
+                                                        this.setState({
+                                                            editedBranch: -1,
+                                                            branchesWereEdited: true,
+                                                            toDeleteBranch: this.state.editedBranchData === '' ? editedBranch : -1,
+                                                        });
+                                                    }}>Confirm</button>
+                                                    : <button onClick={() => {
+                                                            let editedBranch = this.state.editedBranch;
+                                                            this.setState({
+                                                                editedBranch: thisItem,
+                                                                editedBranchData: req[1],
+                                                                toDeleteBranch: this.state.editedBranchData === '' ? editedBranch : -1,
+                                                            });
+                                                        }}>Edit</button>
+                                                }
+                                            </td>
+                                            <td>
+                                                <button onClick={() => {
+                                                    this.setState({editedBranch: -1, toDeleteBranch: thisItem, branchesWereEdited: true});
+                                                }}>Delete</button>
+                                            </td>
+                                        </tr>
+                                    })
+                                }
+                                </tbody>
+                            }
+                            </table>
+                        }
+                        {this.state.branchesWereEdited && this.state.branches !== []
+                            ? <button onClick={this.confirmBranchEdit}>Confirm changes</button>
+                            : ''
+                        }
+                        <button onClick={() => this.setState({page: 1})} type="button">Back</button><br/>
+                    </div>
+                );
             }
         }
     }
