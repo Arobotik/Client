@@ -28,6 +28,8 @@ class AdminApp extends Component {
         editedBranchData: '',
         toDeleteBranch: -1,
         branchesWereEdited: false,
+        requestsSortByAsc: true,
+        requestsShowWithStatus: '',
         page: 0,
         deleted: false,
         getDeleted: false,
@@ -204,6 +206,8 @@ class AdminApp extends Component {
             body: JSON.stringify({
                 login: this.state.adminLogin.toLowerCase(),
                 password: this.state.adminPassword,
+                asc: this.state.requestsSortByAsc,
+                status: this.state.requestsShowWithStatus,
             }),
         });
 
@@ -224,7 +228,7 @@ class AdminApp extends Component {
                 login: this.state.adminLogin.toLowerCase(),
                 password: this.state.adminPassword,
             }),
-        }).then(() => this.setState({loaded: false,}));
+        }).then(() => {this.setState({loaded: false,}); this.loaded = false;});
 
     }
 
@@ -530,7 +534,47 @@ class AdminApp extends Component {
                 return(
                     <div>
                         <button onClick={() => this.setState({page: 1})} type="button">Back</button><br/>
-                        <strong>Requests</strong>
+                        <strong>Requests</strong><br/>
+                        <button onClick={() => {this.setState({requestsSortByAsc: !this.state.requestsSortByAsc}); this.loaded = false;}}
+                                type="button"
+                        >
+                            {this.state.requestsSortByAsc
+                                ? 'Sort by date DESC'
+                                : 'Sort by date ASC'
+                            }
+                        </button><br/>
+                            {this.state.requestsShowWithStatus !== ''
+                                ? <button onClick={() => {this.setState({requestsShowWithStatus: ''}); this.loaded = false;}}
+                                        type="button"
+                                >
+                                    Show all
+                                </button>
+                                : ''
+                            }
+                            {this.state.requestsShowWithStatus !==1
+                                ? <button onClick={() => {this.setState({requestsShowWithStatus: 1}); this.loaded = false;}}
+                                          type="button"
+                                >
+                                    Show only accepted
+                                </button>
+                                : ''
+                            }
+                            {this.state.requestsShowWithStatus !== 0
+                                ? <button onClick={() => {this.setState({requestsShowWithStatus: 0}); this.loaded = false;}}
+                                          type="button"
+                                >
+                                    Show only waiting
+                                </button>
+                                : ''
+                            }
+                            {this.state.requestsShowWithStatus !== -1
+                                ? <button onClick={() => {this.setState({requestsShowWithStatus: -1}); this.loaded = false;}}
+                                          type="button"
+                                >
+                                    Show only rejected
+                                </button>
+                                : ''
+                            }
                         {this.state.requests === null || this.state.requests === undefined
                             ? 'None'
                             : <table>{
@@ -547,6 +591,9 @@ class AdminApp extends Component {
                                         </td>
                                         <td>
                                             <b>Status</b>
+                                        </td>
+                                        <td>
+                                            <b>Send date</b>
                                         </td>
                                     </tr>
                                     {
@@ -569,6 +616,9 @@ class AdminApp extends Component {
                                                 </td>
                                                 <td>
                                                     {req[4]}
+                                                </td>
+                                                <td>
+                                                    {req[5]}
                                                 </td>
                                             </tr>
                                         })

@@ -26,6 +26,9 @@ class App extends Component {
         avatarPath: '',
         branches: [],
         page: 0,
+        filter: '',
+        bookPageCurrent: 0,
+        bookPagesCount: 0,
         correctLogin: false,
         book: '',
         requests: '',
@@ -98,6 +101,7 @@ class App extends Component {
                     about: '',
                     avatar: '',
                     avatarPath: '',
+                    filter: '',
                     id: null,
                     page: 2});
                 break;
@@ -124,7 +128,7 @@ class App extends Component {
         this.validateNewUserData().then(result => {
             switch(result){
                 case 0:
-                    let avatar = this.canvasRef.current.toBlob();
+                    let avatar = this.canvasRef.current !== null ? this.canvasRef.current.toBlob() : null;
                     this.setState({page: 3, avatar: avatar});
                 break;
                 case 1:
@@ -205,15 +209,21 @@ class App extends Component {
     }
 
     async onBookAllGet(){
-        const response = await fetch('/bookAllGet');
+        const response = await fetch('/bookAllGet', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({page: this.state.bookPageCurrent, filter: this.state.filter}),
+        });
         const body = await response.json();
         if (response.status !== 200) throw Error(body.message);
         if (body.express !== null){
-            this.setState({book: body.express});
+            this.setState({book: body.express, bookPagesCount: body.pageCount});
             this.loaded = true;
         }
         else{
-            this.setState({book: null});
+            this.setState({book: null, bookPagesCount: 0});
         }
     };
 
@@ -243,9 +253,12 @@ class App extends Component {
             avatar: '',
             avatarPath: '',
             logged: false,
+            filter: '',
             thisUserId: '',
             thisUserLogin: '',
             thisUserPassword: '',
+            bookPageCurrent: 0,
+            bookPagesCount: 0,
             page: 0,
             correctLogin: false,
             oldLogin: '',
@@ -259,7 +272,6 @@ class App extends Component {
     };
     validateDate(value)
     {
-        console.log('value' + value);
         let arrD = value.split(value.includes('.') ? '.' : '-');
         arrD[1] -= 1;
         let d = new Date(arrD[0], arrD[1], arrD[2]);
@@ -368,18 +380,11 @@ class App extends Component {
                 about: this.state.about,
                 avatar: this.state.avatar,
                 len: this.state.avatar.length,
+                filter: '',
             }),
         });
         this.setState({page: 0});
     };
-
-    onGetNameById(id){
-        for (let item of this.state.book){
-            if (Number(item[0]) === Number(id)){
-                return item[1];
-            }
-        }
-    }
 
     async onRequestionAction(requesting, status){
         const response = await fetch('/requestionAction', {
@@ -431,7 +436,7 @@ class App extends Component {
             this.validateNewUserData().then(async result  =>  {
                 switch (result) {
                     case 0:
-                        this.setState({avatar: this.canvasEditRef.current.toBlob()});
+                        this.setState({avatar: this.canvasEditRef.current !== null ? this.canvasEditRef.current.toBlob() : null});
                         alert('Successfully modified');
                         await fetch('/registerOrChange', {
                             method: 'POST',
@@ -481,6 +486,10 @@ class App extends Component {
             });
         });
     };
+
+    makePagination(){
+        return Array.apply(null, {length: this.state.bookPagesCount}).map(Number.call, Number);
+    }
 
     render() {
         if (!this.state.logged) {
@@ -675,8 +684,20 @@ class App extends Component {
                 }
                 return (
                     <div className="Book">
+                        <button onClick={e => this.onLinkNameClick(this.state.thisUserId)} type="button">My Page</button><br/>
+                        <strong>Find users:</strong>
+                        <input
+                            type="text"
+                            value={this.state.filter}
+                            onChange={e => {
+                                this.setState({filter: e.target.value, bookPageCurrent: 0,});
+                                this.loaded = false;
+                                }
+                            }
+                        /><br/>
+                        <strong>Users</strong>
                             {this.state.book === null || this.state.book === ''
-                                ? <strong>Wait</strong>
+                                ? <strong>None</strong>
                                 : <ul>{
                                     this.state.book.map(item => {
                                         return <li key={item[0]}>
@@ -685,6 +706,18 @@ class App extends Component {
                                 })
                                 }</ul>
                             }
+                            <br/>
+                            {this.makePagination().map(item => {
+                                    return item === Number(this.state.bookPageCurrent)
+                                        ? item + 1
+                                        : (<button value={item}
+                                                   key={item}
+                                                   onClick={e => {this.setState({bookPageCurrent: e.target.value}); this.loaded = false;}}
+                                                   type="button">{item + 1}
+                                        </button>)
+                                })
+                            }
+                        <br/>
                         <button onClick={this.onExitButtonClick} type="button">Exit</button>
                     </div>
                 )
@@ -776,13 +809,13 @@ class App extends Component {
                                     this.state.requests.map(item => {
                                         return <tr key={item}>
                                             <td>
-                                                {this.onGetNameById(item)}
+                                                {item[1]}
                                             </td>
                                             <td>
-                                                <button onClick={() => this.onRequestionAction(item, true)}>Accept</button>
+                                                <button onClick={() => this.onRequestionAction(item[0], true)}>Accept</button>
                                             </td>
                                             <td>
-                                                <button onClick={() => this.onRequestionAction(item, false)}>Refuse</button>
+                                                <button onClick={() => this.onRequestionAction(item[0], false)}>Refuse</button>
                                             </td>
                                         </tr>
                                     })
@@ -794,7 +827,6 @@ class App extends Component {
                     </div>);
             }
             else if (this.state.page === 7){
-                console.log(this.state.branch);
                 return(
                     <div className="PersonsChangePage">
                         <form onSubmit={this.onPersonPageDataChange}>
