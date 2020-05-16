@@ -31,6 +31,8 @@ class App extends Component {
         bookPagesCount: 0,
         correctLogin: false,
         book: '',
+        avatarX: 0,
+        avatarY: 0,
         requests: '',
         oldLogin: '',
     };
@@ -78,7 +80,7 @@ class App extends Component {
 
     onRegisterButtonClick = async e => {
         e.preventDefault();
-        this.setState({login: '', password: '', page: 1});
+        this.setState({login: 'test@asd.ru', password: 'qweASD12', page: 1});
     };
 
     onLoginRegister = async e => {
