@@ -25,15 +25,15 @@ class App extends Component {
         avatar: '',
         avatarPath: '',
         branches: [],
+        lastVisited: [],
+        requests: [],
         page: 0,
         filter: '',
         bookPageCurrent: 0,
         bookPagesCount: 0,
+        carouselPage: 0,
         correctLogin: false,
         book: '',
-        avatarX: 0,
-        avatarY: 0,
-        requests: '',
         oldLogin: '',
     };
 
@@ -229,6 +229,19 @@ class App extends Component {
         }
     };
 
+    async onGetAllLastVisited(){
+        const response = await fetch('/getLastVisited', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({login: this.state.thisUserLogin, password: this.state.thisUserPassword}),
+        });
+        const body = await response.json();
+
+        this.setState({lastVisited: body.express});
+    }
+
     async onGetAllBranches(){
         const response = await fetch('/getAllBranches');
         const body = await response.json();
@@ -261,6 +274,8 @@ class App extends Component {
             thisUserPassword: '',
             bookPageCurrent: 0,
             bookPagesCount: 0,
+            lastVisited: 0,
+            carouselPage: 0,
             page: 0,
             correctLogin: false,
             oldLogin: '',
@@ -272,6 +287,7 @@ class App extends Component {
             canvas.current.changeImage(this.state.avatarPath);
         }
     };
+
     validateDate(value)
     {
         let arrD = value.split(value.includes('.') ? '.' : '-');
@@ -282,6 +298,7 @@ class App extends Component {
             (d.getMonth() === Number(arrD[1])) &&
             (d.getDate() === Number(arrD[2]));
     }
+
     onRequestAccess = async e => {
         const response = await fetch('/requestAccess', {
             method: 'POST',
@@ -733,7 +750,7 @@ class App extends Component {
                       {
                           this.state.avatarPath === ''
                               ? <p>No avatar</p>
-                              : <Canvas avatarPath={this.state.avatarPath} ref={this.canvasRef}/>
+                              : <img src={this.state.avatarPath} alt={'avatar'}/>
                       }
                       <h1>Name: {this.state.name}</h1>
                       <p>Birth Date: {this.state.birthDate} </p>
@@ -766,6 +783,7 @@ class App extends Component {
                 if (!this.loaded){
                     this.onGetAllRequests();
                     this.onGetAllBranches();
+                    this.onGetAllLastVisited();
                     this.loaded = true;
                 }
                 return(
@@ -825,6 +843,39 @@ class App extends Component {
                                 </tbody>
                             }
                             </table>
+                        }
+                        <strong>Last visited pages:</strong>
+                        {this.state.lastVisited.length === 0
+                            ? 'None'
+                            : <div>
+                                {this.state.lastVisited.length > 3
+                                    ? <button onClick={() =>
+                                        this.setState({carouselPage: this.state.carouselPage > 0
+                                                ? this.state.carouselPage - 1
+                                                : Math.floor(this.state.lastVisited.length / 3),
+                                        })}
+                                    > Prev </button>
+                                    : ''
+                                }
+                                {
+                                    this.state.lastVisited.slice(this.state.carouselPage * 3, this.state.carouselPage * 3 + 3).map(item => {
+                                        let avatar = item[2] !== null && item[2] !== '' &&item[2] !== undefined
+                                            ? new Blob([this.makeUint8Array(item[2])], {type: 'image/png'})
+                                            : '';
+                                        let avatarPath = avatar !== '' ? URL.createObjectURL(avatar) : '';
+                                        return (<img src={avatarPath} onClick={() => this.onLinkNameClick(item[0])} width={100} height={100} key={item[0]}></img>);
+                                    })
+                                }
+                                {this.state.lastVisited.length > 3
+                                    ? <button onClick={() =>
+                                        this.setState({carouselPage: this.state.carouselPage < Math.floor(this.state.lastVisited.length / 3)
+                                                ? this.state.carouselPage + 1
+                                                : 0,
+                                        })}
+                                    > Next </button>
+                                    : ''
+                                }
+                            </div>
                         }
                     </div>);
             }
