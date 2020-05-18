@@ -13,7 +13,6 @@ import AdminApp from './AdminApp';
 class RouteSite extends Component {
     render() {
         const { history } = this.props;
-
         return (
             <div className="Route">
                 <Switch>
