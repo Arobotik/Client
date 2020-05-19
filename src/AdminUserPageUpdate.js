@@ -2,12 +2,19 @@ import React, { Component } from 'react';
 import Canvas from "./Canvas";
 import {validateAdminConnection} from './validators';
 import {getUserData, setUserDataUpdate, deleteUser} from "./adminFetches";
+import {getBranches} from "./fetches";
 
 class AdminUserPageUpdate extends Component {
     state = {id: -1,};
 
     componentDidMount() {
         this.setState({id: this.props.match.params.id,});
+    }
+
+    async onGetAllBranches(){
+        const body = await getBranches();
+
+        this.setState({branches: body.express});
     }
 
     async onUserDataGet(){
@@ -79,7 +86,7 @@ class AdminUserPageUpdate extends Component {
     render(){
         validateAdminConnection();
         if (!this.loaded){
-            this.onUserDataGet();
+            this.onUserDataGet().then(() => this.onGetAllBranches());
         }
         return(
             <div className="PersonsPage">
@@ -92,7 +99,7 @@ class AdminUserPageUpdate extends Component {
                     </p>
                     <input
                         type="text"
-                        value={this.state.login}
+                        value={this.state.login ? this.state.login : ''}
                         onChange={e => this.setState({login: e.target.value})}
                     />
                     <p>
@@ -100,7 +107,7 @@ class AdminUserPageUpdate extends Component {
                     </p>
                     <input
                         type="text"
-                        value={this.state.password}
+                        value={this.state.password ? this.state.password : ''}
                         onChange={e => this.setState({password: e.target.value})}
                     /><br/>
                     <p>
@@ -108,7 +115,7 @@ class AdminUserPageUpdate extends Component {
                     </p>
                     <input
                         type="text"
-                        value={this.state.name}
+                        value={this.state.name ? this.state.name : ''}
                         onChange={e => this.setState({name: e.target.value})}
                     />
                     <p>
@@ -116,12 +123,12 @@ class AdminUserPageUpdate extends Component {
                     </p>
                     <input
                         type="date"
-                        value={this.state.birthDate}
+                        value={this.state.birthDate ? this.state.birthDate : ''}
                         onChange={e => this.setState({birthDate: e.target.value})}
                     />
                     <input
                         type="checkbox"
-                        checked={this.state.hideYear}
+                        checked={this.state.hideYear ? this.state.hideYear : false}
                         onChange={e => this.setState({hideYear: e.target.checked})}
                     />Hide Year<br/>
                     <p>
@@ -129,7 +136,7 @@ class AdminUserPageUpdate extends Component {
                     </p>
                     <input
                         type="text"
-                        value={this.state.workPhone}
+                        value={this.state.workPhone ? this.state.workPhone : ''}
                         onChange={e => this.setState({workPhone: e.target.value})}
                     />
                     <p>
@@ -137,7 +144,7 @@ class AdminUserPageUpdate extends Component {
                     </p>
                     <input
                         type="text"
-                        value={this.state.privatePhone1}
+                        value={this.state.privatePhone1 ? this.state.privatePhone1 : ''}
                         onChange={e => this.setState({privatePhone1: e.target.value})}
                     />
                     <p>
@@ -145,33 +152,46 @@ class AdminUserPageUpdate extends Component {
                     </p>
                     <input
                         type="text"
-                        value={this.state.privatePhone2 === null ? '' : this.state.privatePhone2}
+                        value={this.state.privatePhone2 === null ? '' : this.state.privatePhone2 ? this.state.privatePhone2 : ''}
                         onChange={e => this.setState({privatePhone2: e.target.value})}
                     /><br/>
                     <input
                         type="text"
-                        value={this.state.privatePhone3 === null ? '' : this.state.privatePhone3}
+                        value={this.state.privatePhone3 === null ? '' : this.state.privatePhone3 ? this.state.privatePhone3 : ''}
                         onChange={e => this.setState({privatePhone3: e.target.value})}
                     />
                     <input
                         type="checkbox"
-                        checked={this.state.hidePhones}
+                        checked={this.state.hidePhones ? this.state.hidePhones : false}
                         onChange={e => this.setState({hidePhones: e.target.checked})}
                     />Hide Phones<br/>
                     <p>
                         <strong>Branch:</strong>
                     </p>
-                    <input
-                        type="text"
-                        value={this.state.branch === null ? '' : this.state.branch}
-                        onChange={e => this.setState({branch: e.target.value})}
-                    />
+                    <p>
+                        <select
+                            value={this.state.branch !== '' && this.state.branch !== 'None'
+                                ? this.state.branch
+                                : ''
+                            }
+                            onChange={e => this.setState({branch: e.target.value})}
+                        >
+                            <option disabled>Choose branch...</option>
+                            <option value={'None'} key={-1}>None</option>
+                            {this.state.branches === [] || this.state.branches === null || this.state.branches === undefined
+                                ? ''
+                                : this.state.branches.map(item => {
+                                    return <option value={item[1]} key={item[0]}>{item[1]}</option>
+                                })
+                            }
+                        </select>
+                    </p>
                     <p>
                         <strong>Position:</strong>
                     </p>
                     <input
                         type="text"
-                        value={this.state.position === null ? '' : this.state.position}
+                        value={this.state.position === null ? '' : this.state.position ? this.state.position : ''}
                         onChange={e => this.setState({position: e.target.value})}
                     />
                     <p>
@@ -179,7 +199,7 @@ class AdminUserPageUpdate extends Component {
                     </p>
                     <input
                         type="text"
-                        value={this.state.workPlace === null ? '' : this.state.workPlace}
+                        value={this.state.workPlace === null ? '' : this.state.workPlace ? this.state.workPlace : ''}
                         onChange={e => this.setState({workPlace: e.target.value})}
                     />
                     <p>
@@ -187,7 +207,7 @@ class AdminUserPageUpdate extends Component {
                     </p>
                     <input
                         type="text"
-                        value={this.state.about === null ? '' : this.state.about}
+                        value={this.state.about === null ? '' : this.state.about ? this.state.about : ''}
                         onChange={e => this.setState({about: e.target.value})}
                     /><br/>
                     <p>

@@ -9,13 +9,14 @@ class Book extends Component {
         book: [],
         bookPageCurrent: 0,
         bookPagesCount: 0,
+        usersSortByAsc: true,
         thisId: Cookies.get('userId'),
     };
 
     loaded = false;
 
     async onBookAllGet(){
-        const body = await getAllPages(this.state.bookPageCurrent, this.state.filter);
+        const body = await getAllPages(this.state.bookPageCurrent, this.state.filter, this.state.usersSortByAsc,);
         if (body.express !== null){
             this.setState({book: body.express, bookPagesCount: body.pageCount});
             this.loaded = true;
@@ -26,7 +27,7 @@ class Book extends Component {
     };
 
     makePagination(){
-        return Array.apply(null, {length: this.state.bookPagesCount}).map(Number.call, Number);
+        return Array.apply(null, {length: this.state.bookPagesCount - 1}).map(Number.call, Number);
     }
 
     onLinkNameClick(id){
@@ -55,6 +56,16 @@ class Book extends Component {
             return (
                 <div className="Book">
                     <button onClick={e => this.onLinkNameClick(this.state.thisId)} type="button">My Page</button><br/>
+                    <button onClick={() => {
+                        this.setState({usersSortByAsc: !this.state.usersSortByAsc});
+                        this.loaded = false;}}
+                        type="button"
+                    >
+                        {this.state.usersSortByAsc
+                            ? 'Sort by name DESC'
+                            : 'Sort by name ASC'
+                        }
+                    </button><br/>
                     <strong>Find users:</strong>
                     <input
                         type="text"

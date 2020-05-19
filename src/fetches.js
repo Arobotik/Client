@@ -1,7 +1,7 @@
 import Cookies from "js-cookie";
 
-export async function getBranches(){
-    const response = await fetch('/api/branches');
+export async function getBranches(asc = true){
+    const response = await fetch('/api/branches/' + asc);
     return await response.json();
 }
 
@@ -20,8 +20,8 @@ export async function getUser(userId){
     return await response.json();
 }
 
-export async function getAllPages(bookPageCurrent, filter){
-    const response = await fetch('/api/users/' + bookPageCurrent + '/filter' + filter);
+export async function getAllPages(bookPageCurrent, filter, sortByAsc){
+    const response = await fetch('/api/users/' + bookPageCurrent + '/filter' + filter + '/' + sortByAsc);
     return await response.json();
 }
 

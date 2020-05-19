@@ -6,13 +6,14 @@ import {setBranchesUpdate} from "./adminFetches";
 class AdminBranches extends Component {
     state= {
         branches: [],
+        branchesSortByAsc: true,
     };
 
     loaded = false;
 
 
     onBranchesClick = async e =>{
-        const body = await getBranches();
+        const body = await getBranches(this.state.branchesSortByAsc);
         if (body.result === 'error'){
             window.location.assign('http://localhost:3000/admin/login');
         }
@@ -53,6 +54,16 @@ class AdminBranches extends Component {
             let item = -1;
             return (
                 <div>
+                    <button onClick={() => {
+                        this.setState({branchesSortByAsc: !this.state.branchesSortByAsc});
+                        this.loaded = false;}}
+                            type="button"
+                    >
+                        {this.state.branchesSortByAsc
+                            ? 'Sort by name DESC'
+                            : 'Sort by name ASC'
+                        }
+                    </button><br/>
                     <button onClick={() => {
                         let branches = this.state.branches;
                         if (branches === null || branches === undefined){

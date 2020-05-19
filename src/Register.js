@@ -3,10 +3,16 @@ import Canvas from "./Canvas";
 import LoginComponent from "./LoginComponent";
 import {validateNewLoginData, validateNewUserData} from './validators';
 import InputElement from 'react-input-mask';
-import {setNewUser} from './fetches';
+import {getBranches, setNewUser} from './fetches';
 
 class Register extends React.Component {
     state = {login: '', password: '', error: '', page: 1};
+
+    async onGetAllBranches(){
+        const body = await getBranches();
+
+        this.setState({branches: body.express});
+    }
 
     onLoginRegister = async e => {
         e.preventDefault();
@@ -94,9 +100,12 @@ class Register extends React.Component {
             alert('Server error, try later');
         }
     };
-
+    loaded = false;
     render(){
-        console.log(this.state.page);
+        if (!this.loaded){
+            this.onGetAllBranches();
+            this.loaded = true;
+        }
         if (this.state.page === 1) {
             return (
                 <div className="RegisterState1">
@@ -179,13 +188,23 @@ class Register extends React.Component {
                             onChange={e => this.setState({hidePhones: e.target.checked})}
                         />Hide Phones<br/>
                         <p>
-                            <strong>Branch:</strong>
+                            <select
+                                value={this.state.branch !== '' && this.state.branch !== 'None'
+                                    ? this.state.branch
+                                    : ''
+                                }
+                                onChange={e => this.setState({branch: e.target.value})}
+                            >
+                                <option disabled>Choose branch...</option>
+                                <option value={'None'} key={-1}>None</option>
+                                {this.state.branches === [] || this.state.branches === null || this.state.branches === undefined
+                                    ? ''
+                                    : this.state.branches.map(item => {
+                                        return <option value={item[1]} key={item[0]}>{item[1]}</option>
+                                    })
+                                }
+                            </select>
                         </p>
-                        <input
-                            type="text"
-                            value={this.state.branch}
-                            onChange={e => this.setState({branch: e.target.value})}
-                        />
                         <p>
                             <strong>Position:</strong>
                         </p>

@@ -147,7 +147,7 @@ class MyPageUpdate extends Component {
                         </p>
                         <input
                             type="text"
-                            value={this.state.login}
+                            value={this.state.login ? this.state.login : ''}
                             onChange={e => this.setState({login: e.target.value})}
                         />
                         <p>
@@ -155,7 +155,7 @@ class MyPageUpdate extends Component {
                         </p>
                         <input
                             type="text"
-                            value={this.state.password}
+                            value={this.state.password ? this.state.password : ''}
                             onChange={e => this.setState({password: e.target.value})}
                         /><br/>
                         <p>
@@ -163,7 +163,7 @@ class MyPageUpdate extends Component {
                         </p>
                         <input
                             type="text"
-                            value={this.state.name}
+                            value={this.state.name ? this.state.name : ''}
                             onChange={e => this.setState({name: e.target.value})}
                         />
                         <p>
@@ -171,12 +171,12 @@ class MyPageUpdate extends Component {
                         </p>
                         <input
                             type="date"
-                            value={this.state.birthDate}
+                            value={this.state.birthDate ? this.state.birthDate : ''}
                             onChange={e => this.setState({birthDate: e.target.value})}
                         />
                         <input
                             type="checkbox"
-                            checked={this.state.hideYear}
+                            checked={this.state.hideYear ? this.state.login : false}
                             onChange={e => this.setState({hideYear: e.target.checked})}
                         />Hide Year<br/>
                         <p>
@@ -184,7 +184,7 @@ class MyPageUpdate extends Component {
                         </p>
                         <InputElement
                             mask="+7(999)999-99-99"
-                            value={this.state.workPhone}
+                            value={this.state.workPhone ? this.state.workPhone : ''}
                             onChange={e => this.setState({workPhone: e.target.value})}
                             placeholder="Work Phone" ref="workPhone"
                         />
@@ -193,7 +193,7 @@ class MyPageUpdate extends Component {
                         </p>
                         <InputElement
                             mask="+7(999)999-99-99"
-                            value={this.state.privatePhone1}
+                            value={this.state.privatePhone1 ? this.state.privatePhone1 : ''}
                             onChange={e => this.setState({privatePhone1: e.target.value})}
                             placeholder="Private Phone 1" ref="privatePhone1"
                         />
@@ -202,19 +202,19 @@ class MyPageUpdate extends Component {
                         </p>
                         <InputElement
                             mask="+7(999)999-99-99"
-                            value={this.state.privatePhone2}
+                            value={this.state.privatePhone2 ? this.state.privatePhone2 : ''}
                             onChange={e => this.setState({privatePhone2: e.target.value})}
                             placeholder="Private Phone 2" ref="privatePhone2"
                         /><br/>
                         <InputElement
                             mask="+7(999)999-99-99"
-                            value={this.state.privatePhone3}
+                            value={this.state.privatePhone3 ? this.state.privatePhone3 : ''}
                             onChange={e => this.setState({privatePhone3: e.target.value})}
                             placeholder="Private Phone 3" ref="privatePhone3"
                         />
                         <input
                             type="checkbox"
-                            checked={this.state.hidePhones}
+                            checked={this.state.hidePhones ? this.state.hidePhones : false}
                             onChange={e => this.setState({hidePhones: e.target.checked})}
                         />Hide Phones<br/>
                         <p>
@@ -222,7 +222,7 @@ class MyPageUpdate extends Component {
                         </p>
                         <p>
                             <select
-                                defaultValue={this.state.branch !== '' && this.state.branch !== 'None'
+                                value={this.state.branch !== '' && this.state.branch !== 'None'
                                     ? this.state.branch
                                     : ''
                                 }
@@ -243,7 +243,7 @@ class MyPageUpdate extends Component {
                         </p>
                         <input
                             type="text"
-                            value={this.state.position === null ? '' : this.state.position}
+                            value={this.state.position === null ? '' : this.state.position ? this.state.position : ''}
                             onChange={e => this.setState({position: e.target.value})}
                         />
                         <p>
@@ -251,7 +251,7 @@ class MyPageUpdate extends Component {
                         </p>
                         <input
                             type="text"
-                            value={this.state.workPlace === null ? '' : this.state.workPlace}
+                            value={this.state.workPlace === null ? '' : this.state.workPlace ? this.state.workPlace : ''}
                             onChange={e => this.setState({workPlace: e.target.value})}
                         />
                         <p>
@@ -259,7 +259,7 @@ class MyPageUpdate extends Component {
                         </p>
                         <input
                             type="text"
-                            value={this.state.about === null ? '' : this.state.about}
+                            value={this.state.about === null ? '' : this.state.about ? this.state.about : ''}
                             onChange={e => this.setState({about: e.target.value})}
                         /><br/>
                         <p>

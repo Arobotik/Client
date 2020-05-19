@@ -11,8 +11,8 @@ export async function login(){
     return await response.json();
 }
 
-export async function getAllPages(deleted){
-    const response = await fetch('/admin/users/' + Cookies.get('sessionId') + '/' + deleted);
+export async function getAllPages(bookPageCurrent, filter, deleted, sortByAsc){
+    const response = await fetch('/admin/users/' + Cookies.get('sessionId') + '/' + bookPageCurrent + '/filter' + filter + '/' + deleted + '/' + sortByAsc);
     return await response.json();
 }
 
@@ -21,8 +21,8 @@ export async function getUserData(id){
     return await response.json();
 }
 
-export async function getAllRequests(asc, status){
-    const response = await fetch('/admin/requests/' + Cookies.get('sessionId') + '/' + asc + '/' + status);
+export async function getAllRequests(page, asc, status){
+    const response = await fetch('/admin/requests/' + Cookies.get('sessionId') + '/' + page + '/' + asc + '/status' + status);
     return await response.json();
 }
 
