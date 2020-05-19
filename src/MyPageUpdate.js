@@ -2,16 +2,18 @@ import React, { Component } from 'react';
 import Cookies from 'js-cookie';
 import Canvas from "./Canvas";
 import {validateNewLoginData, validateNewUserData, validateConnection} from './validators';
+import {setUpdatedUserData, getMyPage, getBranches} from './fetches';
+import InputElement from "react-input-mask";
 
 class MyPageUpdate extends Component {
     state= {
         login: '',
         password: '',
+        error: '',
     };
 
     async onGetAllBranches(){
-        const response = await fetch('/getAllBranches');
-        const body = await response.json();
+        const body = await getBranches();
 
         this.setState({branches: body.express});
     }
@@ -24,22 +26,24 @@ class MyPageUpdate extends Component {
 
     onPersonPageDataChange = async e =>{
         e.preventDefault();
+        Cookies.set('login', this.state.login);
+        Cookies.set('password', this.state.password);
         validateNewLoginData(this.state, this.state.oldLogin.toLowerCase() !== this.state.login.toLowerCase())
             .then(result => {
                 switch (result){
                     case 0:
                         return true;
                     case 1:
-                        alert('Password should contains only A-Z, a-z, 0-9 and at least one of each of them');
+                        this.setState({error: 'Password should contains only A-Z, a-z, 0-9 and at least one of each of them'});
                         break;
                     case 2:
-                        alert('Password should contains at least 8 and not more then 16 symbols');
+                        this.setState({error: 'Password should contains at least 8 and not more then 16 symbols'});
                         break;
                     case 3:
-                        alert('Login is incorrect');
+                        this.setState({error: 'Login is incorrect'});
                         break;
                     default:
-                        alert('Login is already occupied')
+                        this.setState({error: 'Login is already occupied'});
                 }
                 return false;
             }).then((result) => {
@@ -49,53 +53,31 @@ class MyPageUpdate extends Component {
                         case 0:
                             this.setState({avatar: this.canvasEditRef.current !== null ? this.canvasEditRef.current.toBlob() : null});
                             alert(this.state.branch);
-                            await fetch('/registerOrChange', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    login: this.state.login.toLowerCase(),
-                                    password: this.state.password,
-                                    name: this.state.name,
-                                    birthDate: this.state.birthDate,
-                                    workPhone: this.state.workPhone,
-                                    privatePhone1: this.state.privatePhone1,
-                                    privatePhone2: this.state.privatePhone1,
-                                    privatePhone3: this.state.privatePhone1,
-                                    branch: this.state.branch,
-                                    position: this.state.position,
-                                    workPlace: this.state.workPlace,
-                                    hideYear: this.state.hideYear,
-                                    hidePhones: this.state.hidePhones,
-                                    about: this.state.about,
-                                    avatar: this.state.avatar,
-                                    len: this.state.avatar.length,
-                                    session: Cookies.get('sessionId'),
-                                }),
-                            });
+                            await setUpdatedUserData(this.state);
                             alert('Successfully modified');
                             this.state.correctLogin = false;
                             this.setState({page: this.state.page - 2});
                             break;
                         case 1:
-                            alert('Field Name must be filled');
+                            this.setState({error: 'Field Name must be filled'});
                             break;
                         case 2:
-                            alert('Work Phone must be correct work Number');
+                            this.setState({error: 'Work Phone must be correct work Number'});
                             break;
                         case 3:
-                            alert('Field Name must be correct private Number');
+                            this.setState({error: 'Field Number must be correct private Number'});
                             break;
                         case 4:
-                            alert('If you want to fill more private Numbers, they must be correct');
+                            this.setState({error: 'If you want to fill more private Numbers, they must be correct'});
                             break;
                         default:
-                            alert('Incorrect Birth Date');
+                            this.setState({error: 'Incorrect Birth Date'});
                             break;
                     }
                 });
         });
+        Cookies.remove('login');
+        Cookies.remove('password');
     };
 
     loaded = false;
@@ -109,14 +91,7 @@ class MyPageUpdate extends Component {
     }
 
     async onGetMyPage(){
-        const response = await fetch('/getMyPage', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({session: Cookies.get('sessionId')}),
-            });
-        const body = await response.json();
+        const body = await getMyPage();
 
         if (body.result){
             let avatar = body.avatar !== null && body.avatar !== '' && body.avatar !== undefined
@@ -207,31 +182,35 @@ class MyPageUpdate extends Component {
                         <p>
                             <strong>*Work Phone:</strong>
                         </p>
-                        <input
-                            type="text"
+                        <InputElement
+                            mask="+7(999)999-99-99"
                             value={this.state.workPhone}
                             onChange={e => this.setState({workPhone: e.target.value})}
+                            placeholder="Work Phone" ref="workPhone"
                         />
                         <p>
                             <strong>*Private Phone:</strong>
                         </p>
-                        <input
-                            type="text"
+                        <InputElement
+                            mask="+7(999)999-99-99"
                             value={this.state.privatePhone1}
                             onChange={e => this.setState({privatePhone1: e.target.value})}
+                            placeholder="Private Phone 1" ref="privatePhone1"
                         />
                         <p>
                             <strong>Additional private Phones:</strong>
                         </p>
-                        <input
-                            type="text"
-                            value={this.state.privatePhone2 === null ? '' : this.state.privatePhone2}
+                        <InputElement
+                            mask="+7(999)999-99-99"
+                            value={this.state.privatePhone2}
                             onChange={e => this.setState({privatePhone2: e.target.value})}
+                            placeholder="Private Phone 2" ref="privatePhone2"
                         /><br/>
-                        <input
-                            type="text"
-                            value={this.state.privatePhone3 === null ? '' : this.state.privatePhone3}
+                        <InputElement
+                            mask="+7(999)999-99-99"
+                            value={this.state.privatePhone3}
                             onChange={e => this.setState({privatePhone3: e.target.value})}
+                            placeholder="Private Phone 3" ref="privatePhone3"
                         />
                         <input
                             type="checkbox"
@@ -302,6 +281,10 @@ class MyPageUpdate extends Component {
                         <button type="submit">Confirm</button>
                         <button onClick={() => window.location.assign('http://localhost:3000/app/mypage')} type="button">Back</button><br/>
                     </form>
+                    {this.state.error !== ''
+                        ? <p style={{color: "red"}}>{this.state.error}</p>
+                        :''
+                    }
                 </div>
             )
         }

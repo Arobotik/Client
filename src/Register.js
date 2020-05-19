@@ -1,8 +1,9 @@
 import React from "react";
-import Cookies from 'js-cookie';
 import Canvas from "./Canvas";
 import LoginComponent from "./LoginComponent";
 import {validateNewLoginData, validateNewUserData} from './validators';
+import InputElement from 'react-input-mask';
+import {setNewUser} from './fetches';
 
 class Register extends React.Component {
     state = {login: '', password: '', error: '', page: 1};
@@ -85,31 +86,13 @@ class Register extends React.Component {
 
     onNewUserRegister = async e =>{
         e.preventDefault();
-        await fetch('/registerOrChange', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                login: Cookies.get('login'),
-                password: Cookies.get('password'),
-                name: this.state.name,
-                birthDate: this.state.birthDate,
-                workPhone: this.state.workPhone,
-                privatePhone1: this.state.privatePhone1,
-                privatePhone2: this.state.privatePhone1,
-                privatePhone3: this.state.privatePhone1,
-                branch: this.state.branch,
-                position: this.state.position,
-                workPlace: this.state.workPlace,
-                hideYear: this.state.hideYear,
-                hidePhones: this.state.hidePhones,
-                about: this.state.about,
-                avatar: this.state.avatar,
-                len: this.state.avatar.length,
-            }),
-        });
-        window.location.assign('http://localhost:3000/app/login')
+        const body = await setNewUser(this.state);
+        if (body.result === true){
+            window.location.assign('http://localhost:3000/app/login')
+        }
+        else{
+            alert('Server error, try later');
+        }
     };
 
     render(){
@@ -160,31 +143,35 @@ class Register extends React.Component {
                         <p>
                             <strong>*Work Phone:</strong>
                         </p>
-                        <input
-                            type="text"
+                        <InputElement
+                            mask="+7(999)999-99-99"
                             value={this.state.workPhone}
                             onChange={e => this.setState({workPhone: e.target.value})}
+                            placeholder="Work Phone" ref="workPhone"
                         />
                         <p>
                             <strong>*Private Phone:</strong>
                         </p>
-                        <input
-                            type="text"
+                        <InputElement
+                            mask="+7(999)999-99-99"
                             value={this.state.privatePhone1}
                             onChange={e => this.setState({privatePhone1: e.target.value})}
+                            placeholder="Private Phone 1" ref="privatePhone1"
                         />
                         <p>
                             <strong>Additional private Phones:</strong>
                         </p>
-                        <input
-                            type="text"
+                        <InputElement
+                            mask="+7(999)999-99-99"
                             value={this.state.privatePhone2}
                             onChange={e => this.setState({privatePhone2: e.target.value})}
+                            placeholder="Private Phone 2" ref="privatePhone2"
                         /><br/>
-                        <input
-                            type="text"
+                        <InputElement
+                            mask="+7(999)999-99-99"
                             value={this.state.privatePhone3}
                             onChange={e => this.setState({privatePhone3: e.target.value})}
+                            placeholder="Private Phone 3" ref="privatePhone3"
                         />
                         <input
                             type="checkbox"

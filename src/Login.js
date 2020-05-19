@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Cookies from 'js-cookie';
 import LoginComponent from "./LoginComponent";
+import {login} from './fetches';
 
 class Login extends Component {
     state= {
@@ -14,24 +15,17 @@ class Login extends Component {
         if(/^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$/.test(Cookies.get('login')) &&
             /([a-z]+[A-Z]+[0-9]+|[a-z]+[0-9]+[A-Z]+|[A-Z]+[a-z]+[0-9]+|[A-Z]+[0-9]+[a-z]+|[0-9]+[a-z]+[A-Z]+|[0-9]+[A-Z]+[a-z]+)/.test(Cookies.get('password'))
         ) {
-            const response = await fetch('/loginPost', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({login: Cookies.get('login'), password: Cookies.get('password')}),
-            });
-            const body = await response.json();
+            const body = await login();
 
-            if (body.logged) {
+            if (body.result === true) {
                 Cookies.set('userId', body.id);
                 Cookies.set('sessionId', body.sessionId);
                 window.location.assign('http://localhost:3000/app/book');
+                Cookies.remove('login');
+                Cookies.remove('password');
             } else {
                 this.setState({error: 'Incorrect Login or Password'});
             }
-            Cookies.remove('login');
-            Cookies.remove('password');
         }
         else{
             this.setState({error: 'Check Login or Password'});

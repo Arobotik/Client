@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Cookies from 'js-cookie';
 import {validateConnection} from './validators';
+import {getAllPages} from "./fetches";
 
 class Book extends Component {
     state = {
@@ -14,15 +15,7 @@ class Book extends Component {
     loaded = false;
 
     async onBookAllGet(){
-        const response = await fetch('/bookAllGet', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({page: this.state.bookPageCurrent, filter: this.state.filter}),
-        });
-        const body = await response.json();
-        if (response.status !== 200) throw Error(body.message);
+        const body = await getAllPages(this.state.bookPageCurrent, this.state.filter);
         if (body.express !== null){
             this.setState({book: body.express, bookPagesCount: body.pageCount});
             this.loaded = true;

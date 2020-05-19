@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import Cookies from 'js-cookie';
 import {validateAdminConnection} from './validators';
+import {setAdminRequest, getAllRequests} from "./adminFetches";
 
 class AdminRequests extends Component {
     state= {
@@ -11,37 +11,22 @@ class AdminRequests extends Component {
 
     loaded = false;
 
-    async onRequestionAction(target, requesting, status){
-        await fetch('/adminRequestionAction', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                target: target,
-                requesting: requesting,
-                status: status,
-                session: Cookies.get('sessionId'),
-            }),
-        }).then(() => this.loaded = false);
-
+    async onRequestAction(target, requesting, status){
+        const body = await setAdminRequest(target, requesting, status).then(() => this.loaded = false);
+        if (body.result === false){
+            alert('Error in request changing')
+        }
+        this.onRequestsClick();
     }
 
     onRequestsClick = async e =>{
-        const response =  await fetch('/adminGetAllRequests', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                session: Cookies.get('sessionId'),
-                asc: this.state.requestsSortByAsc,
-                status: this.state.requestsShowWithStatus,
-            }),
-        });
-
-        const body = await response.json();
-        this.setState({requests: body.express, page: 4, loaded: true});
+        const body = await getAllRequests(this.state.requestsSortByAsc, this.state.requestsShowWithStatus);
+        if (body.result === true){
+            this.setState({requests: body.express, loaded: true});
+        }
+        else{
+            alert('Error in getting requests');
+        }
     };
 
     render(){
@@ -125,13 +110,13 @@ class AdminRequests extends Component {
                                             {req[3]}
                                         </td>
                                         <td>
-                                            <button onClick={() => this.onRequestionAction(req[0], req[2], 1)}>Accept</button>
+                                            <button onClick={() => this.onRequestAction(req[0], req[2], 1)}>Accept</button>
                                         </td>
                                         <td>
-                                            <button onClick={() => this.onRequestionAction(req[0], req[2], 0)}>Wait</button>
+                                            <button onClick={() => this.onRequestAction(req[0], req[2], 0)}>Wait</button>
                                         </td>
                                         <td>
-                                            <button onClick={() => this.onRequestionAction(req[0], req[2],-1)}>Refuse</button>
+                                            <button onClick={() => this.onRequestAction(req[0], req[2],-1)}>Refuse</button>
                                         </td>
                                         <td>
                                             {req[4]}

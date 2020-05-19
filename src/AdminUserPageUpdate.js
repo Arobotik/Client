@@ -1,24 +1,17 @@
 import React, { Component } from 'react';
-import Cookies from 'js-cookie';
 import Canvas from "./Canvas";
 import {validateAdminConnection} from './validators';
+import {getUserData, setUserDataUpdate, deleteUser} from "./adminFetches";
 
 class AdminUserPageUpdate extends Component {
-    state = {userId: -1,};
+    state = {id: -1,};
 
     componentDidMount() {
         this.setState({id: this.props.match.params.id,});
     }
 
     async onUserDataGet(){
-        const response = await fetch('/getMyPage', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({id: this.state.id, session: Cookies.get('sessionId'),}),
-        });
-        const body = await response.json();
+        const body = await getUserData(this.state.id);
         let avatar = body.avatar !== null && body.avatar !== '' && body.avatar !== undefined
             ? new Blob([this.makeUint8Array(body.avatar)], {type: 'image/png'})
             : '';
@@ -57,32 +50,7 @@ class AdminUserPageUpdate extends Component {
     onPersonPageDataChange = async e =>{
         e.preventDefault();
         let avatar = this.canvasUserRef.current !== null ? this.canvasUserRef.current.toBlob() : null;
-        await fetch('/changeByAdmin', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                login: this.state.login.toLowerCase(),
-                password: this.state.password,
-                name: this.state.name,
-                birthDate: this.state.birthDate,
-                workPhone: this.state.workPhone,
-                privatePhone1: this.state.privatePhone1,
-                privatePhone2: this.state.privatePhone1,
-                privatePhone3: this.state.privatePhone1,
-                branch: this.state.branch,
-                position: this.state.position,
-                workPlace: this.state.workPlace,
-                hideYear: this.state.hideYear,
-                hidePhones: this.state.hidePhones,
-                about: this.state.about,
-                avatar: avatar,
-                len: avatar !== null ? avatar.length : 0,
-                id: this.state.id,
-                session: Cookies.get('sessionId'),
-            }),
-        }).then(()=>{
+        await setUserDataUpdate(this.state, avatar).then(()=>{
             this.state.correctLogin = false;
             this.setState({avatar: avatar});
         });
@@ -90,20 +58,14 @@ class AdminUserPageUpdate extends Component {
     };
 
     async onDeleteUser(deleted){
-        await fetch('/deleteUserByAdmin', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                id: this.state.id,
-                session: Cookies.get('sessionId'),
-                deleted: deleted,
-            }),
-        }).then(()=>{
+        const body = await deleteUser(this.state.id, deleted);
+        if (body.result === true){
             this.state.correctLogin = false;
             this.setState({deleted: deleted});
-        });
+        }
+        else{
+            alert('Error in action');
+        }
     }
 
     canvasUserRef = React.createRef();

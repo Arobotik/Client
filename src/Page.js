@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Cookies from 'js-cookie';
 import {validateConnection} from './validators';
+import {getRequestAccess, getUser} from './fetches';
 
 class Page extends Component {
     state = {userId: -1,};
@@ -17,14 +18,7 @@ class Page extends Component {
 
 
     onRequestAccess = async e => {
-        const response = await fetch('/requestAccess', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({session: Cookies.get('sessionId'), requestedId: this.state.userId}),
-        });
-        const body = await response.json();
+        const body = await getRequestAccess(this.state.userId);
 
         switch (body.requested){
             case 0:
@@ -47,14 +41,7 @@ class Page extends Component {
     }
 
     async onPageGet() {
-        const response = await fetch('/getInfoAbout', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({id: this.state.userId, session: Cookies.get('sessionId')}),
-        });
-        const body = await response.json();
+        const body = await getUser(this.state.userId);
 
         if (body.result){
             let avatar = body.avatar !== null && body.avatar !== '' && body.avatar !== undefined

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Cookies from 'js-cookie';
 import {validateConnection} from './validators';
+import {getRequests, getLastVisited, setRequest, getMyPage} from './fetches';
 
 class MyPage extends Component {
     state= {
@@ -9,48 +10,27 @@ class MyPage extends Component {
     };
 
     async onGetAllLastVisited(){
-        const response = await fetch('/getLastVisited', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({session: Cookies.get('sessionId')}),
-        });
-        const body = await response.json();
+        const body = await getLastVisited();
 
         this.setState({lastVisited: body.express});
     }
 
-    async onGetAllBranches(){
-        const response = await fetch('/getAllBranches');
-        const body = await response.json();
-
-        this.setState({branches: body.express});
-    }
-
-    async onRequestionAction(requesting, status){
-        const response = await fetch('/requestionAction', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({session: Cookies.get('sessionId'), requesting: requesting, status: status ? 1 : -1}),
-        });
-        await response.json();
+    async onRequestAction(requesting, status){
+        const body = await setRequest(requesting, status);
+        if (body.result === false){
+            alert('Error in status change');
+        }
         this.onGetAllRequests();
     };
 
     async onGetAllRequests(){
-        const response = await fetch('/requestsAllGet', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({session: Cookies.get('sessionId')}),
-        });
-        const body = await response.json();
-
-        this.setState({requests: body.express})
+        const body = await getRequests();
+        if (body.result === true){
+            this.setState({requests: body.express});
+        }
+        else{
+            alert('Error in getting requests');
+        }
     }
 
     loaded = false;
@@ -64,14 +44,7 @@ class MyPage extends Component {
     }
 
     async onGetMyPage(){
-        const response = await fetch('/getMyPage', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({session: Cookies.get('sessionId')}),
-        });
-        const body = await response.json();
+        const body = await getMyPage();
 
         if (body.result){
             let avatar = body.avatar !== null && body.avatar !== '' && body.avatar !== undefined
@@ -111,7 +84,6 @@ class MyPage extends Component {
         validateConnection();
             if (!this.loaded){
                 this.onGetAllRequests();
-                this.onGetAllBranches();
                 this.onGetAllLastVisited();
                 this.onGetMyPage();
                 this.loaded = true;
@@ -162,10 +134,10 @@ class MyPage extends Component {
                                             {item[1]}
                                         </td>
                                         <td>
-                                            <button onClick={() => this.onRequestionAction(item[0], true)}>Accept</button>
+                                            <button onClick={() => this.onRequestAction(item[0], true)}>Accept</button>
                                         </td>
                                         <td>
-                                            <button onClick={() => this.onRequestionAction(item[0], false)}>Refuse</button>
+                                            <button onClick={() => this.onRequestAction(item[0], false)}>Refuse</button>
                                         </td>
                                     </tr>
                                 })
@@ -193,10 +165,13 @@ class MyPage extends Component {
                                         ? new Blob([this.makeUint8Array(item[2])], {type: 'image/png'})
                                         : '';
                                     let avatarPath = avatar !== '' ? URL.createObjectURL(avatar) : '';
-                                    return (<img src={avatarPath}
-                                                 onClick={() => this.onLinkNameClick(item[0])}
-                                                 width={100} height={100}
-                                                 key={item[0]} alt={item[1]}/>);
+                                    return (avatarPath !== ''
+                                            ? <img src={avatarPath}
+                                                  onClick={() => this.onLinkNameClick(item[0])}
+                                                  width={100} height={100}
+                                                  key={item[0]} alt={item[1]}/>
+                                            : <button onClick={() => this.onLinkNameClick(item[0])} key={item[0]}>{item[1]}</button>
+                                             );
                                 })
                             }
                             {this.state.lastVisited.length > 3

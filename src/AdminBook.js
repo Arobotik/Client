@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Cookies from 'js-cookie';
 import {validateAdminConnection} from './validators';
+import {getAllPages} from "./adminFetches";
 
 class AdminBook extends Component {
     state= {
@@ -14,15 +15,7 @@ class AdminBook extends Component {
     }
 
     async onBookAllGet(deleted = false){
-        const response = await fetch('/bookAllGetByAdmin', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({session: Cookies.get('sessionId'), deleted: deleted}),
-        });
-        const body = await response.json();
-        if (response.status !== 200) throw Error(body.message);
+        const body = await getAllPages(deleted);
         if (body.result === 'error'){
             window.location.assign('http://localhost:3000/admin/login');
         }

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import Cookies from 'js-cookie';
 import {validateAdminConnection} from './validators';
+import {getBranches} from "./fetches";
+import {setBranchesUpdate} from "./adminFetches";
 
 class AdminBranches extends Component {
     state= {
@@ -11,9 +12,7 @@ class AdminBranches extends Component {
 
 
     onBranchesClick = async e =>{
-        const response =  await fetch('/getAllBranches');
-
-        const body = await response.json();
+        const body = await getBranches();
         if (body.result === 'error'){
             window.location.assign('http://localhost:3000/admin/login');
         }
@@ -28,22 +27,19 @@ class AdminBranches extends Component {
     };
 
     confirmBranchEdit = async e =>{
-        await fetch('/updateBranchesByAdmin', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                branches: this.state.branches,
-                session: Cookies.get('sessionId'),
-            }),
-        }).then(() => this.setState({
-            loaded: false,
-            editedBranch: -1,
-            editedBranchData: '',
-            toDeleteBranch: -1,
-            branchesWereEdited: false,
-        }));
+        const body = await setBranchesUpdate(this.state.branches);
+        if (body.result === true){
+            this.setState({
+                loaded: false,
+                editedBranch: -1,
+                editedBranchData: '',
+                toDeleteBranch: -1,
+                branchesWereEdited: false,
+            });
+        }
+        else{
+            alert('Error in branches edit');
+        }
     };
 
     render(){

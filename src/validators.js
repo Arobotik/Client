@@ -3,15 +3,9 @@ import Cookies from "js-cookie";
 export async function validateNewLoginData(state, loginChanged){
     let res = 0;
     if (loginChanged) {
-        const response = await fetch('/userValidate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({login: Cookies.get('login')}),
-        });
+        const response = await fetch('/api/validate/' + Cookies.get('login'));
         const body = await response.json();
-        res = body.validate ? 0 : 4;
+        res = body.result ? 0 : 4;
     }
     let passValidate = /([a-z]+[A-Z]+[0-9]+|[a-z]+[0-9]+[A-Z]+|[A-Z]+[a-z]+[0-9]+|[A-Z]+[0-9]+[a-z]+|[0-9]+[a-z]+[A-Z]+|[0-9]+[A-Z]+[a-z]+)/;
     let loginValidate = /^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$/;
@@ -28,7 +22,8 @@ export async function validateNewLoginData(state, loginChanged){
 }
 
 export async function validateNewUserData(state){
-    let phoneValidate = /^(\s*)?(\+)?([- _():=+]?\d[- _():=+]?){10,14}(\s*)?$/;
+    // eslint-disable-next-line
+    let phoneValidate = /^((\+?7|8)[\-]?)?((\(\d{3}\))|(\d{3}))?([\-])?(\d{3}[\-]?\d{2}[\-]?\d{2})$/;
     if (state.name.length === 0){
         return 1;
     }
@@ -66,31 +61,14 @@ function validateDate (value)
 }
 
 export async function validateConnection(){
-    const response = await fetch('/checkSession', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            session: Cookies.get('sessionId'),
-        }),
-    });
-
+    const response = await fetch('/api/checkSession/' + Cookies.get('sessionId'));
     const body = await response.json();
     if (!body.logged)
         window.location.assign('http://localhost:3000/app/login');
 }
 
 export async function validateAdminConnection(){
-    const response = await fetch('/checkAdminSession', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            session: Cookies.get('sessionId'),
-        }),
-    });
+    const response = await fetch('/api/checkAdminSession/' + Cookies.get('sessionId'));
 
     const body = await response.json();
     if (!body.logged)

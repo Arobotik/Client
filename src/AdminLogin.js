@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Cookies from 'js-cookie';
 import LoginComponent from "./LoginComponent";
+import {login} from "./adminFetches";
 
 class AdminLogin extends Component {
     state= {
@@ -11,16 +12,9 @@ class AdminLogin extends Component {
 
     onLogin = async e => {
         e.preventDefault();
-        const response = await fetch('/adminLoginPost', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ login: Cookies.get('login'), password: Cookies.get('password') }),
-        });
-        const body = await response.json();
+        const body = await login();
 
-        if (body.logged){
+        if (body.result === true){
             Cookies.set('sessionId', body.sessionId);
             window.location.assign('http://localhost:3000/admin/book');
             Cookies.remove('login');
