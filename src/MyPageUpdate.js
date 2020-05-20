@@ -24,6 +24,13 @@ class MyPageUpdate extends Component {
         }
     };
 
+    changeInputHandler = e =>{
+        e.persist();
+        this.setState(prev => ({...prev, ...{
+                [e.target.name]: e.target.value
+            }}))
+    };
+
     onPersonPageDataChange = async e =>{
         e.preventDefault();
         Cookies.set('login', this.state.login);
@@ -148,7 +155,8 @@ class MyPageUpdate extends Component {
                         <input
                             type="text"
                             value={this.state.login ? this.state.login : ''}
-                            onChange={e => this.setState({login: e.target.value})}
+                            name={"login"}
+                            onChange={this.changeInputHandler}
                         />
                         <p>
                             <strong>Password:</strong>
@@ -156,7 +164,8 @@ class MyPageUpdate extends Component {
                         <input
                             type="text"
                             value={this.state.password ? this.state.password : ''}
-                            onChange={e => this.setState({password: e.target.value})}
+                            name={"password"}
+                            onChange={this.changeInputHandler}
                         /><br/>
                         <p>
                             <strong>*Name:</strong>
@@ -164,7 +173,8 @@ class MyPageUpdate extends Component {
                         <input
                             type="text"
                             value={this.state.name ? this.state.name : ''}
-                            onChange={e => this.setState({name: e.target.value})}
+                            name={"name"}
+                            onChange={this.changeInputHandler}
                         />
                         <p>
                             <strong>*Birth Date:</strong>
@@ -172,7 +182,8 @@ class MyPageUpdate extends Component {
                         <input
                             type="date"
                             value={this.state.birthDate ? this.state.birthDate : ''}
-                            onChange={e => this.setState({birthDate: e.target.value})}
+                            name={"birthDate"}
+                            onChange={this.changeInputHandler}
                         />
                         <input
                             type="checkbox"
@@ -185,7 +196,8 @@ class MyPageUpdate extends Component {
                         <InputElement
                             mask="+7(999)999-99-99"
                             value={this.state.workPhone ? this.state.workPhone : ''}
-                            onChange={e => this.setState({workPhone: e.target.value})}
+                            name={"workPhone"}
+                            onChange={this.changeInputHandler}
                             placeholder="Work Phone" ref="workPhone"
                         />
                         <p>
@@ -194,7 +206,8 @@ class MyPageUpdate extends Component {
                         <InputElement
                             mask="+7(999)999-99-99"
                             value={this.state.privatePhone1 ? this.state.privatePhone1 : ''}
-                            onChange={e => this.setState({privatePhone1: e.target.value})}
+                            name={"privatePhone1"}
+                            onChange={this.changeInputHandler}
                             placeholder="Private Phone 1" ref="privatePhone1"
                         />
                         <p>
@@ -203,13 +216,15 @@ class MyPageUpdate extends Component {
                         <InputElement
                             mask="+7(999)999-99-99"
                             value={this.state.privatePhone2 ? this.state.privatePhone2 : ''}
-                            onChange={e => this.setState({privatePhone2: e.target.value})}
+                            name={"privatePhone2"}
+                            onChange={this.changeInputHandler}
                             placeholder="Private Phone 2" ref="privatePhone2"
                         /><br/>
                         <InputElement
                             mask="+7(999)999-99-99"
                             value={this.state.privatePhone3 ? this.state.privatePhone3 : ''}
-                            onChange={e => this.setState({privatePhone3: e.target.value})}
+                            name={"privatePhone3"}
+                            onChange={this.changeInputHandler}
                             placeholder="Private Phone 3" ref="privatePhone3"
                         />
                         <input
@@ -244,7 +259,8 @@ class MyPageUpdate extends Component {
                         <input
                             type="text"
                             value={this.state.position === null ? '' : this.state.position ? this.state.position : ''}
-                            onChange={e => this.setState({position: e.target.value})}
+                            name={"position"}
+                            onChange={this.changeInputHandler}
                         />
                         <p>
                             <strong>Work Place:</strong>
@@ -252,7 +268,8 @@ class MyPageUpdate extends Component {
                         <input
                             type="text"
                             value={this.state.workPlace === null ? '' : this.state.workPlace ? this.state.workPlace : ''}
-                            onChange={e => this.setState({workPlace: e.target.value})}
+                            name={"workPlace"}
+                            onChange={this.changeInputHandler}
                         />
                         <p>
                             <strong>About:</strong>
@@ -260,7 +277,8 @@ class MyPageUpdate extends Component {
                         <input
                             type="text"
                             value={this.state.about === null ? '' : this.state.about ? this.state.about : ''}
-                            onChange={e => this.setState({about: e.target.value})}
+                            name={"about"}
+                            onChange={this.changeInputHandler}
                         /><br/>
                         <p>
                             <strong>Avatar:</strong>

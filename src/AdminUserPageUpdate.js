@@ -3,6 +3,7 @@ import Canvas from "./Canvas";
 import {validateAdminConnection} from './validators';
 import {getUserData, setUserDataUpdate, deleteUser} from "./adminFetches";
 import {getBranches} from "./fetches";
+import InputElement from "react-input-mask";
 
 class AdminUserPageUpdate extends Component {
     state = {id: -1,};
@@ -83,6 +84,13 @@ class AdminUserPageUpdate extends Component {
         }
     };
 
+    changeInputHandler = e =>{
+        e.persist();
+        this.setState(prev => ({...prev, ...{
+                [e.target.name]: e.target.value
+            }}))
+    };
+
     render(){
         validateAdminConnection();
         if (!this.loaded){
@@ -100,7 +108,8 @@ class AdminUserPageUpdate extends Component {
                     <input
                         type="text"
                         value={this.state.login ? this.state.login : ''}
-                        onChange={e => this.setState({login: e.target.value})}
+                        name={"login"}
+                        onChange={this.changeInputHandler}
                     />
                     <p>
                         <strong>Password:</strong>
@@ -108,7 +117,8 @@ class AdminUserPageUpdate extends Component {
                     <input
                         type="text"
                         value={this.state.password ? this.state.password : ''}
-                        onChange={e => this.setState({password: e.target.value})}
+                        name={"password"}
+                        onChange={this.changeInputHandler}
                     /><br/>
                     <p>
                         <strong>*Name:</strong>
@@ -116,7 +126,8 @@ class AdminUserPageUpdate extends Component {
                     <input
                         type="text"
                         value={this.state.name ? this.state.name : ''}
-                        onChange={e => this.setState({name: e.target.value})}
+                        name={"name"}
+                        onChange={this.changeInputHandler}
                     />
                     <p>
                         <strong>*Birth Date:</strong>
@@ -124,7 +135,8 @@ class AdminUserPageUpdate extends Component {
                     <input
                         type="date"
                         value={this.state.birthDate ? this.state.birthDate : ''}
-                        onChange={e => this.setState({birthDate: e.target.value})}
+                        name={"birthDate"}
+                        onChange={this.changeInputHandler}
                     />
                     <input
                         type="checkbox"
@@ -134,31 +146,39 @@ class AdminUserPageUpdate extends Component {
                     <p>
                         <strong>*Work Phone:</strong>
                     </p>
-                    <input
-                        type="text"
+                    <InputElement
+                        mask="+7(999)999-99-99"
                         value={this.state.workPhone ? this.state.workPhone : ''}
-                        onChange={e => this.setState({workPhone: e.target.value})}
+                        name={"workPhone"}
+                        onChange={this.changeInputHandler}
+                        placeholder="Work Phone" ref="workPhone"
                     />
                     <p>
                         <strong>*Private Phone:</strong>
                     </p>
-                    <input
-                        type="text"
+                    <InputElement
+                        mask="+7(999)999-99-99"
                         value={this.state.privatePhone1 ? this.state.privatePhone1 : ''}
-                        onChange={e => this.setState({privatePhone1: e.target.value})}
+                        name={"privatePhone1"}
+                        onChange={this.changeInputHandler}
+                        placeholder="Private Phone 1" ref="privatePhone1"
                     />
                     <p>
                         <strong>Additional private Phones:</strong>
                     </p>
-                    <input
-                        type="text"
-                        value={this.state.privatePhone2 === null ? '' : this.state.privatePhone2 ? this.state.privatePhone2 : ''}
-                        onChange={e => this.setState({privatePhone2: e.target.value})}
+                    <InputElement
+                        mask="+7(999)999-99-99"
+                        value={this.state.privatePhone2 ? this.state.privatePhone2 : ''}
+                        name={"privatePhone2"}
+                        onChange={this.changeInputHandler}
+                        placeholder="Private Phone 2" ref="privatePhone2"
                     /><br/>
-                    <input
-                        type="text"
-                        value={this.state.privatePhone3 === null ? '' : this.state.privatePhone3 ? this.state.privatePhone3 : ''}
-                        onChange={e => this.setState({privatePhone3: e.target.value})}
+                    <InputElement
+                        mask="+7(999)999-99-99"
+                        value={this.state.privatePhone3 ? this.state.privatePhone3 : ''}
+                        name={"privatePhone3"}
+                        onChange={this.changeInputHandler}
+                        placeholder="Private Phone 3" ref="privatePhone3"
                     />
                     <input
                         type="checkbox"
@@ -192,7 +212,8 @@ class AdminUserPageUpdate extends Component {
                     <input
                         type="text"
                         value={this.state.position === null ? '' : this.state.position ? this.state.position : ''}
-                        onChange={e => this.setState({position: e.target.value})}
+                        name={"position"}
+                        onChange={this.changeInputHandler}
                     />
                     <p>
                         <strong>Work Place:</strong>
@@ -200,7 +221,8 @@ class AdminUserPageUpdate extends Component {
                     <input
                         type="text"
                         value={this.state.workPlace === null ? '' : this.state.workPlace ? this.state.workPlace : ''}
-                        onChange={e => this.setState({workPlace: e.target.value})}
+                        name={"workPlace"}
+                        onChange={this.changeInputHandler}
                     />
                     <p>
                         <strong>About:</strong>
@@ -208,7 +230,8 @@ class AdminUserPageUpdate extends Component {
                     <input
                         type="text"
                         value={this.state.about === null ? '' : this.state.about ? this.state.about : ''}
-                        onChange={e => this.setState({about: e.target.value})}
+                        name={"about"}
+                        onChange={this.changeInputHandler}
                     /><br/>
                     <p>
                         <strong>Avatar:</strong>
