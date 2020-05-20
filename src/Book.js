@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Cookies from 'js-cookie';
 import {validateConnection} from './validators';
 import {getAllPages} from "./fetches";
+import BookSite from "./BookSite";
 
 class Book extends Component {
     state = {
@@ -30,8 +31,8 @@ class Book extends Component {
         return Array.apply(null, {length: this.state.bookPagesCount - 1}).map(Number.call, Number);
     }
 
-    onLinkNameClick(id){
-        if (id === this.state.thisId) {
+    onLinkNameClick(id, isSameUser){
+        if (isSameUser) {
             window.location.assign('http://localhost:3000/app/mypage');
         }
         else{
@@ -79,13 +80,7 @@ class Book extends Component {
                     <strong>Users</strong>
                     {this.state.book === null || this.state.book === ''
                         ? <strong>None</strong>
-                        : <ul>{
-                            this.state.book.map(item => {
-                                return <li key={item[0]}>
-                                    <button onClick={() => this.onLinkNameClick(item[0])}>{item[1]}</button>
-                                </li>
-                            })
-                        }</ul>
+                        : <BookSite callback={this.onLinkNameClick} book={this.state.book} thisId={this.state.thisId}/>
                     }
                     <br/>
                     {this.makePagination().map(item => {

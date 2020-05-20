@@ -21,6 +21,11 @@ export async function validateNewLoginData(state, loginChanged){
     return res;
 }
 
+export function validateLogin(){
+    return /^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$/.test(Cookies.get('login')) &&
+    /([a-z]+[A-Z]+[0-9]+|[a-z]+[0-9]+[A-Z]+|[A-Z]+[a-z]+[0-9]+|[A-Z]+[0-9]+[a-z]+|[0-9]+[a-z]+[A-Z]+|[0-9]+[A-Z]+[a-z]+)/.test(Cookies.get('password'));
+}
+
 export async function validateNewUserData(state){
     // eslint-disable-next-line
     let phoneValidate = /^((\+?7|8)[\-]?)?((\(\d{3}\))|(\d{3}))?([\-])?(\d{3}[\-]?\d{2}[\-]?\d{2})$/;

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Cookies from 'js-cookie';
 import {validateAdminConnection} from './validators';
 import {getAllPages} from "./adminFetches";
+import BookSite from "./BookSite";
 
 class AdminBook extends Component {
     state= {
@@ -71,13 +72,7 @@ class AdminBook extends Component {
                     /><br/>
                     {this.state.bookData === null || this.state.bookData === undefined || this.state.bookData === []
                         ? <strong>Wait</strong>
-                        : <ul>{
-                            this.state.bookData.map(item => {
-                                return <li key={item[0]}>
-                                    <button onClick={() => this.onLinkNameClick(item[0])}>{item[1]}</button>
-                                </li>
-                            })
-                        }</ul>
+                        : <BookSite callback={this.onLinkNameClick} book={this.state.bookData}/>
                     }
                     <br/>
                     {this.makePagination().map(item => {

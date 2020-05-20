@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Cookies from 'js-cookie';
 import LoginComponent from "./LoginComponent";
 import {login} from './fetches';
+import {validateLogin} from "./validators";
 
 class Login extends Component {
     state= {
@@ -12,9 +13,8 @@ class Login extends Component {
 
     onLogin = async e => {
         e.preventDefault();
-        if(/^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$/.test(Cookies.get('login')) &&
-            /([a-z]+[A-Z]+[0-9]+|[a-z]+[0-9]+[A-Z]+|[A-Z]+[a-z]+[0-9]+|[A-Z]+[0-9]+[a-z]+|[0-9]+[a-z]+[A-Z]+|[0-9]+[A-Z]+[a-z]+)/.test(Cookies.get('password'))
-        ) {
+        if(validateLogin())
+        {
             const body = await login();
 
             if (body.result === true) {
