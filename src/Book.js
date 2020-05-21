@@ -28,7 +28,7 @@ class Book extends Component {
     };
 
     makePagination(){
-        return Array.apply(null, {length: this.state.bookPagesCount - 1}).map(Number.call, Number);
+        return Array.apply(null, {length: this.state.bookPagesCount}).map(Number.call, Number);
     }
 
     onLinkNameClick(id, isSameUser){
