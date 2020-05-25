@@ -1,14 +1,40 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
+import {Router} from "react-router-dom"
+import {createBrowserHistory} from 'history'
+import thunk from 'redux-thunk';
+import {createStore, applyMiddleware} from "redux";
+import {Provider} from 'react-redux';
+import {rootReducer} from "./Redux/rootReducer";
+import {syncHistoryWithStore} from 'react-router-redux';
+
+import RouteSite from './RouteSite';
+
 import * as serviceWorker from './serviceWorker';
+import {loadState, saveState} from "./Redux/localStorage";
+const persistedState = loadState();
+const store = createStore(rootReducer, persistedState, applyMiddleware(thunk));
+
+store.subscribe(() => {
+    saveState({
+        user: store.getState().user
+    })
+});
+
+const hashHistory = createBrowserHistory();
+const history = syncHistoryWithStore(hashHistory, store);
+
+const router = (
+    <Provider store={store}>
+      <Router history={history}>
+        <RouteSite />
+      </Router>
+    </Provider>
+);
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+    router,
+    document.getElementById('root')
 );
 
 // If you want your app to work offline and load faster, you can change
