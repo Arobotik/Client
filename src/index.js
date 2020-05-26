@@ -17,7 +17,8 @@ const store = createStore(rootReducer, persistedState, applyMiddleware(thunk));
 
 store.subscribe(() => {
     saveState({
-        user: store.getState().user
+        user: store.getState().user,
+        admin: store.getState().admin
     })
 });
 

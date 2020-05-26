@@ -1,18 +1,18 @@
 import Cookies from "js-cookie";
 
-export async function login(){
+export async function login(login, password){
     const response = await fetch('/admin/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ login: Cookies.get('login'), password: Cookies.get('password') }),
+        body: JSON.stringify({ login: login, password: password }),
     });
     return await response.json();
 }
 
-export async function getAllPages(bookPageCurrent, filter, deleted, sortByAsc){
-    const response = await fetch('/admin/users/' + Cookies.get('sessionId') + '/' + bookPageCurrent + '/filter' + filter + '/' + deleted + '/' + sortByAsc);
+export async function getAllPages(sessionId, bookPageCurrent, filter, deleted, sortByAsc){
+    const response = await fetch('/admin/users/' + sessionId + '/' + bookPageCurrent + '/filter' + filter + '/' + deleted + '/' + sortByAsc);
     return await response.json();
 }
 
@@ -21,13 +21,13 @@ export async function getUserData(id){
     return await response.json();
 }
 
-export async function getAllRequests(page, asc, status){
-    const response = await fetch('/admin/requests/' + Cookies.get('sessionId') + '/' + page + '/' + asc + '/status' + status);
+export async function getAllRequests(sessionId, page, asc, status){
+    const response = await fetch('/admin/requests/' + sessionId + '/' + page + '/' + asc + '/status' + status);
     return await response.json();
 }
 
-export async function setAdminRequest(target, requesting, status){
-    const response = await fetch('/admin/requests/' + Cookies.get('sessionId'), {
+export async function setAdminRequest(sessionId, target, requesting, status){
+    const response = await fetch('/admin/requests/' + sessionId, {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
@@ -41,7 +41,7 @@ export async function setAdminRequest(target, requesting, status){
     return await response.json();
 }
 
-export async function setBranchesUpdate(branches){
+export async function setBranchesUpdate(sessionId, branches){
     const response = await  fetch('/admin/branches', {
         method: 'PATCH',
         headers: {
@@ -49,7 +49,7 @@ export async function setBranchesUpdate(branches){
         },
         body: JSON.stringify({
             branches: branches,
-            session: Cookies.get('sessionId'),
+            session: sessionId,
         }),
     });
     return await response.json();

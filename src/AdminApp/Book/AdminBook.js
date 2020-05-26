@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
-import Cookies from 'js-cookie';
 import {validateAdminConnection} from '../../Helpers/validators';
-import {getAllPages} from "../../Helpers/adminFetches";
 import BookSite from "../../Components/BookSite";
+import {loadBook} from "../../Redux/adminActions"
+import {connect} from "react-redux";
 
 class AdminBook extends Component {
     state= {
         filter: '',
-        bookData: [],
         usersSortByAsc: true,
         bookPageCurrent: 0,
         bookPagesCount: 0,
+        getDeleted: false,
     };
 
     loaded = false;
@@ -20,32 +20,22 @@ class AdminBook extends Component {
     }
 
     makePagination(){
-        return Array.apply(null, {length: this.state.bookPagesCount}).map(Number.call, Number);
+        return Array.apply(null, {length: this.props.bookPagesCount}).map(Number.call, Number);
     }
 
-    async onBookAllGet(deleted = false){
-        const body = await getAllPages(this.state.bookPageCurrent, this.state.filter, deleted, this.state.usersSortByAsc);
-        if (body.result === 'error'){
-            window.location.assign('http://localhost:3000/admin/login');
-        }
-        if (body.express !== null){
-            this.setState({bookData: body.express, bookPagesCount: body.pageCount,});
-            this.loaded = true;
-        }
-        else{
-            this.setState({bookData: null});
-        }
+    async onBookAllGet(){
+        this.props.loadBook(this.props.sessionId, this.state.bookPageCurrent, this.state.filter, this.state.getDeleted, this.state.usersSortByAsc)
     };
 
     onExitButtonClick = async e => {
-        Cookies.remove('sessionId');
         window.location.assign('http://localhost:3000/admin/login');
     };
 
     render(){
-        validateAdminConnection();
+        validateAdminConnection(this.props.sessionId);
             if (!this.loaded){
-                this.onBookAllGet(this.state.getDeleted);
+                this.onBookAllGet();
+                this.loaded = true;
             }
             return (
                 <div className="Book">
@@ -70,9 +60,9 @@ class AdminBook extends Component {
                         }
                         }
                     /><br/>
-                    {this.state.bookData === null || this.state.bookData === undefined || this.state.bookData === []
+                    {this.props.bookData === null || this.props.bookData === undefined || this.props.bookData === []
                         ? <strong>Wait</strong>
-                        : <BookSite callback={this.onLinkNameClick} book={this.state.bookData}/>
+                        : <BookSite callback={this.onLinkNameClick} book={this.props.bookData} id={'admin'}/>
                     }
                     <br/>
                     {this.makePagination().map(item => {
@@ -98,4 +88,17 @@ class AdminBook extends Component {
         }
 }
 
-export default AdminBook;
+const mapStateToProps = state => {
+    console.log(state);
+    return {
+        bookData: state.admin.bookData,
+        bookPagesCount: state.admin.bookPagesCount,
+        sessionId: state.admin.sessionId,
+    }
+};
+
+const mapDispatchToProps = {
+    loadBook
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AdminBook);

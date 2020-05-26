@@ -1,42 +1,46 @@
 import React, { Component } from 'react';
 import {validateAdminConnection} from '../../Helpers/validators';
-import {setAdminRequest, getAllRequests} from "../../Helpers/adminFetches";
+import {loadRequests, updateRequests} from "../../Redux/adminActions";
+import {connect} from "react-redux";
+
+let globalVar;
 
 class AdminRequests extends Component {
     state= {
-        requestsData: [],
+        requests: [],
         requestsSortByAsc: true,
         requestsShowWithStatus: '',
         requestsPageCurrent: 0,
-        requestsPagesCount: 0,
     };
+
+    componentDidMount(){
+        globalVar = {};
+        globalVar.callback = (state) => {
+            this.updateState(state);
+        };
+    }
+
+    updateState(state){
+        this.setState({requests: state.requests})
+    }
 
     loaded = false;
 
     async onRequestAction(target, requesting, status){
-        const body = await setAdminRequest(target, requesting, status).then(() => this.loaded = false);
-        if (body.result === false){
-            alert('Error in request changing')
-        }
+        this.props.updateRequests(this.props.sessionId, target, requesting, status);
         this.onRequestsClick();
     }
 
     makePagination(){
-        return Array.apply(null, {length: this.state.requestsPagesCount}).map(Number.call, Number);
+        return Array.apply(null, {length: this.props.requestsPagesCount}).map(Number.call, Number);
     }
 
     onRequestsClick = async e =>{
-        const body = await getAllRequests(this.state.requestsPageCurrent, this.state.requestsSortByAsc, this.state.requestsShowWithStatus);
-        if (body.result === true){
-            this.setState({requests: body.express, requestsPagesCount: body.pageCount,});
-        }
-        else{
-            alert('Error in getting requests');
-        }
+        this.props.loadRequests(this.props.sessionId, this.state.requestsPageCurrent, this.state.requestsSortByAsc, this.state.requestsShowWithStatus);
     };
 
     render(){
-        validateAdminConnection();
+        validateAdminConnection(this.props.sessionId);
             let item = 0;
             if (!this.loaded){
                 this.onRequestsClick().then(()=>{this.loaded = true});
@@ -154,4 +158,21 @@ class AdminRequests extends Component {
         }
 }
 
-export default AdminRequests;
+const mapStateToProps = state => {
+    console.log(state);
+    if (globalVar !== undefined){
+        globalVar.callback(state.admin);
+    }
+    return {
+        requestsData: state.admin.requests,
+        requestsPagesCount: state.admin.requestsPagesCount,
+        sessionId: state.admin.sessionId
+    }
+};
+
+const mapDispatchToProps = {
+    loadRequests,
+    updateRequests
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AdminRequests);

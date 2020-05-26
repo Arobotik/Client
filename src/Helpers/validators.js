@@ -79,10 +79,10 @@ export async function validateConnection(sessionId){
     }
 }
 
-export async function validateAdminConnection(){
-    const response = await fetch('/api/checkAdminSession/' + Cookies.get('sessionId'));
+export async function validateAdminConnection(sessionId){
+    const response = await fetch('/api/checkAdminSession/' + (sessionId && sessionId !== '' ? sessionId : Cookies.get('sessionId')));
 
     const body = await response.json();
-    if (!body.logged)
+    if (body.logged !== true)
         window.location.assign('http://localhost:3000/admin/login');
 }

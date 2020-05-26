@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Cookies from 'js-cookie';
 import {validateConnection} from '../../Helpers/validators';
 import BookSite from "../../Components/BookSite";
 import {loadBook} from "../../Redux/actions";
@@ -36,9 +35,6 @@ class Book extends Component {
 
 
     onExitButtonClick = async e => {
-        Cookies.remove('userId');
-        Cookies.remove('pageId');
-        Cookies.remove('sessionId');
         window.location.assign('http://localhost:3000/app/login');
     };
 

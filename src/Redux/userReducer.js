@@ -49,14 +49,8 @@ export const userReducer = (state = initialState, action) => {
         case APP_CORRECT_LOGIN:{
             return {...state, login: '', password: '', sessionId: action.payload.sessionId, id: action.payload.id}
         }
-        case APP_INCORRECT_LOGIN:{
-            return {...state, error: action.payload.error}
-        }
         case APP_BOOK_SUCCESSFUL_LOAD:{
             return {...state, book: action.payload.express, bookPagesCount: action.payload.pageCount}
-        }
-        case APP_BOOK_FAILED_LOAD:{
-            return {...state, error: action.payload.error}
         }
         case APP_MYPAGE_SUCCESSFUL_LOAD:{
             return {
@@ -82,14 +76,8 @@ export const userReducer = (state = initialState, action) => {
                 error: ''
             }
         }
-        case APP_MYPAGE_FAILED_LOAD:{
-            return {...state, error: action.payload.error}
-        }
         case APP_MYPAGE_REQUESTS_SUCCESSFUL_LOAD:{
             return {...state, requests: action.payload.express}
-        }
-        case APP_MYPAGE_REQUESTS_FAILED_LOAD:{
-            return {...state, error: action.payload.error}
         }
         case APP_MYPAGE_LASTVISITED_LOAD:{
             return {...state, lastVisited: action.payload.express}
@@ -112,9 +100,6 @@ export const userReducer = (state = initialState, action) => {
                 avatarPath: action.payload.avatarPath,
                 answer: '',
             }
-        }
-        case APP_USERPAGE_FAILED_LOAD:{
-            return {...state, error: action.payload.error}
         }
         case APP_USERPAGE_REQUEST_ACCESS:{
             return {...state, answer: action.payload.answer}
@@ -145,6 +130,11 @@ export const userReducer = (state = initialState, action) => {
                 error: '',
             }
         }
+        case APP_USERPAGE_FAILED_LOAD:
+        case APP_MYPAGE_FAILED_LOAD:
+        case APP_BOOK_FAILED_LOAD:
+        case APP_INCORRECT_LOGIN:
+        case APP_MYPAGE_REQUESTS_FAILED_LOAD:
         case APP_MYPAGEUPDATE_FAILED:{
             return {...state, error: action.payload.error}
         }
