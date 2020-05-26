@@ -11,9 +11,22 @@ import {
     ADMIN_REQUESTS_FAILED_EDIT,
     ADMIN_REQUESTS_FAILED_LOAD,
     ADMIN_REQUESTS_SUCCESSFUL_EDIT,
-    ADMIN_REQUESTS_SUCCESSFUL_LOAD
+    ADMIN_REQUESTS_SUCCESSFUL_LOAD, ADMIN_USERPAGE_FAILED_DELETE,
+    ADMIN_USERPAGE_FAILED_LOAD,
+    ADMIN_USERPAGE_FAILED_UPDATE,
+    ADMIN_USERPAGE_SUCCESSFUL_DELETE,
+    ADMIN_USERPAGE_SUCCESSFUL_LOAD,
+    ADMIN_USERPAGE_SUCCESSFUL_UPDATE,
 } from "./types";
-import {getAllPages, getAllRequests, login, setAdminRequest, setBranchesUpdate} from "../Helpers/adminFetches";
+import {
+    deleteUser,
+    getAllPages,
+    getAllRequests,
+    getUserData,
+    login,
+    setAdminRequest,
+    setBranchesUpdate, setUserDataUpdate
+} from "../Helpers/adminFetches";
 import Cookies from "js-cookie";
 import {getBranches} from "../Helpers/fetches";
 
@@ -80,6 +93,23 @@ export function loadRequests(sessionId, requestsPageCurrent, requestsSortByAsc, 
     }
 }
 
+export function loadUser(sessionId, id){
+    return async dispatch => {
+        const body = await getUserData(sessionId, id);
+
+        if (body.result) {
+            body.avatar = body.avatar !== null && body.avatar !== '' && body.avatar !== undefined
+                ? new Blob([makeUint8Array(body.avatar)], {type: 'image/png'})
+                : '';
+            body.avatarPath = body.avatar !== '' ? URL.createObjectURL(body.avatar) : '';
+            dispatch({type: ADMIN_USERPAGE_SUCCESSFUL_LOAD, payload: body});
+        } else {
+            window.location.assign('http://localhost:3000/admin/login');
+            dispatch({type: ADMIN_USERPAGE_FAILED_LOAD, payload: {error: 'Failed to load user page'}})
+        }
+    }
+}
+
 export function updateRequests(sessionId, target, requesting, status){
     return async dispatch => {
         const body = await setAdminRequest(sessionId, target, requesting, status);
@@ -92,14 +122,38 @@ export function updateRequests(sessionId, target, requesting, status){
     }
 }
 
+export function updateUserPage(sessionId, canvas, state){
+    return async dispatch => {
+        let avatar = canvas !== null ? canvas.toBlob() : null;
+        const body = await setUserDataUpdate(sessionId, state, avatar);
+        if (body.result)
+        {
+            alert('Successfully modified');
+            dispatch({type: ADMIN_USERPAGE_SUCCESSFUL_UPDATE});
+        }
+        else
+        {
+            dispatch({type: ADMIN_USERPAGE_FAILED_UPDATE, payload: {error: 'Error in userpage updating'}});
+        }
+    }
+}
+
+export function deleteUserPage(sessionId, id, deleted){
+    return async dispatch => {
+        const body = await deleteUser(sessionId, id, deleted);
+        if (body.result === true) {
+            dispatch({type: ADMIN_USERPAGE_SUCCESSFUL_DELETE, payload: {deleted: deleted}});
+        } else {
+            dispatch({type: ADMIN_USERPAGE_FAILED_DELETE, payload: {error: 'Error in userpage deleted state change'}});
+        }
+    }
+}
+
 export function adminLogin(_login, _password){
     return async dispatch => {
         const body = await login(_login, _password);
 
         if (body.result === true) {
-            /////////////
-            Cookies.set('sessionId', body.sessionId);
-            /////////////
             window.location.assign('http://localhost:3000/admin/book');
             Cookies.remove('login');
             Cookies.remove('password');

@@ -5,7 +5,6 @@ import InputElement from "react-input-mask";
 import {loadBranches, loadMyPage, updateUserPage} from "../../Redux/actions";
 import {connect} from "react-redux";
 
-
 let globalVar;
 
 class MyPageUpdate extends Component {

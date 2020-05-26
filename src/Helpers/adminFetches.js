@@ -1,5 +1,3 @@
-import Cookies from "js-cookie";
-
 export async function login(login, password){
     const response = await fetch('/admin/login', {
         method: 'POST',
@@ -16,8 +14,8 @@ export async function getAllPages(sessionId, bookPageCurrent, filter, deleted, s
     return await response.json();
 }
 
-export async function getUserData(id){
-    const response = await fetch('/api/me/' + Cookies.get('sessionId') + '/' + id);
+export async function getUserData(sessionId, id){
+    const response = await fetch('/api/me/' + sessionId + '/' + id);
     return await response.json();
 }
 
@@ -55,8 +53,8 @@ export async function setBranchesUpdate(sessionId, branches){
     return await response.json();
 }
 
-export async function setUserDataUpdate(state, avatar){
-    return await fetch('/admin/users/' + Cookies.get('sessionId'), {
+export async function setUserDataUpdate(sessionId, state, avatar){
+    const response = await fetch('/admin/users/' + sessionId, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -80,17 +78,19 @@ export async function setUserDataUpdate(state, avatar){
             len: avatar !== null ? avatar.length : 0,
             id: state.id,
         })
-    })
+    });
+    return await response.json();
 }
 
-export async function deleteUser(id, deleted){
-    return await fetch('/api/deleteUser/' + id + '/' + deleted, {
+export async function deleteUser(sessionId, id, deleted){
+    const response = await fetch('/api/deleteUser/' + id + '/' + deleted, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            session: Cookies.get('sessionId'),
+            session: sessionId,
         })
-    })
+    });
+    return await response.json();
 }

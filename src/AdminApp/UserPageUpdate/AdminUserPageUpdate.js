@@ -1,79 +1,71 @@
 import React, { Component } from 'react';
 import Canvas from "../../Components/Canvas";
 import {validateAdminConnection} from '../../Helpers/validators';
-import {getUserData, setUserDataUpdate, deleteUser} from "../../Helpers/adminFetches";
-import {getBranches} from "../../Helpers/fetches";
 import InputElement from "react-input-mask";
+import {loadBranches, loadUser, updateUserPage, deleteUserPage} from "../../Redux/adminActions";
+import {connect} from "react-redux";
+
+let globalVar;
 
 class AdminUserPageUpdate extends Component {
     state = {id: -1,};
 
     componentDidMount() {
         this.setState({id: this.props.match.params.id,});
+        globalVar = {};
+        globalVar.callback = (state) => {
+            this.updateState(state);
+        };
+    }
+
+    updateState(state){
+        if (state !== undefined) {
+            this.setState({
+                name: state.name,
+                login: state.login,
+                oldLogin: state.login,
+                password: state.password,
+                birthDate: state.birthDate,
+                branch: state.branch,
+                workPhone: state.workPhone,
+                position: state.position,
+                workPlace: state.workPlace,
+                privatePhone1: state.privatePhone1,
+                privatePhone2: state.privatePhone2,
+                privatePhone3: state.privatePhone3,
+                hideYear: state.hideYear,
+                hidePhones: state.hidePhones,
+                about: state.about,
+                avatar: state.avatar !== undefined ? (state.avatar.__proto__ === Blob.prototype ? state.avatar : '') : '',
+                avatarPath: state.avatarPath,
+                sessionId: state.sessionId,
+                branches: state.branches,
+                error: state.error,
+                deleted: state.deleted
+            });
+            this.imageChange(this.canvasUserRef);
+        }
     }
 
     async onGetAllBranches(){
-        const body = await getBranches();
-
-        this.setState({branches: body.express});
+        this.props.loadBranches();
     }
 
     async onUserDataGet(){
-        const body = await getUserData(this.state.id);
-        let avatar = body.avatar !== null && body.avatar !== '' && body.avatar !== undefined
-            ? new Blob([this.makeUint8Array(body.avatar)], {type: 'image/png'})
-            : '';
-        this.setState({
-            login: body.login,
-            password: body.password,
-            name: body.name,
-            birthDate: body.birthDate,
-            branch: body.branch,
-            workPhone: body.workPhone,
-            position: body.position,
-            workPlace: body.workPlace,
-            privatePhone1: body.privatePhone1,
-            privatePhone2: body.privatePhone2,
-            privatePhone3: body.privatePhone3,
-            hideYear: body.hideYear,
-            hidePhones: body.hidePhones,
-            about: body.about,
-            deleted: body.deleted,
-            avatar: avatar,
-            avatarPath: avatar !== '' ? URL.createObjectURL(avatar) : '',
-            thisUserLogin: body.login,
-            thisUserPassword: body.password
-        });
+        this.props.loadUser(this.props.sessionId, this.props.id);
         this.loaded = true;
     };
 
-    makeUint8Array(data){
-        let arr = new Uint8Array(data.length);
-        for (let i = 0; i < data.length; i++ ) {
-            arr[i] = data[i];
-        }
-        return arr;
-    }
-
     onPersonPageDataChange = async e =>{
         e.preventDefault();
-        let avatar = this.canvasUserRef.current !== null ? this.canvasUserRef.current.toBlob() : null;
-        await setUserDataUpdate(this.state, avatar).then(()=>{
-            this.state.correctLogin = false;
-            this.setState({avatar: avatar});
-        });
-        alert('Successfully modified');
+        this.state.correctLogin = false;
+        this.props.updateUserPage(this.props.sessionId, this.canvasUserRef.current, this.state);
+        this.loaded = false;
     };
 
     async onDeleteUser(deleted){
-        const body = await deleteUser(this.state.id, deleted);
-        if (body.result === true){
-            this.state.correctLogin = false;
-            this.setState({deleted: deleted});
-        }
-        else{
-            alert('Error in action');
-        }
+        this.props.deleteUserPage(this.props.sessionId, this.props.id, deleted);
+        this.state.correctLogin = false;
     }
 
     canvasUserRef = React.createRef();
@@ -92,9 +84,10 @@ class AdminUserPageUpdate extends Component {
     };
 
     render(){
-        validateAdminConnection();
+        validateAdminConnection(this.props.sessionId);
         if (!this.loaded){
-            this.onUserDataGet().then(() => this.onGetAllBranches());
+            this.onUserDataGet();
+            this.onGetAllBranches();
         }
         return(
             <div className="PersonsPage">
@@ -198,9 +191,9 @@ class AdminUserPageUpdate extends Component {
                         >
                             <option disabled>Choose branch...</option>
                             <option value={'None'} key={-1}>None</option>
-                            {this.state.branches === [] || this.state.branches === null || this.state.branches === undefined
+                            {this.props.branches === [] || this.props.branches === null || this.props.branches === undefined
                                 ? ''
-                                : this.state.branches.map(item => {
+                                : this.props.branches.map(item => {
                                     return <option value={item[1]} key={item[0]}>{item[1]}</option>
                                 })
                             }
@@ -262,4 +255,39 @@ class AdminUserPageUpdate extends Component {
     }
 }
 
-export default AdminUserPageUpdate;
+const mapStateToProps = (state, ownProps) => {
+    console.log(state);
+    if (globalVar !== undefined){
+        globalVar.callback(state.admin);
+    }
+    return {
+        id: ownProps.match.params.id,
+        name: state.admin.name,
+        login: state.admin.login,
+        oldLogin: state.admin.login,
+        password: state.admin.password,
+        birthDate: state.admin.birthDate,
+        branch: state.admin.branch,
+        workPhone: state.admin.workPhone,
+        position: state.admin.position,
+        workPlace: state.admin.workPlace,
+        privatePhone1: state.admin.privatePhone1,
+        privatePhone2: state.admin.privatePhone2,
+        privatePhone3: state.admin.privatePhone3,
+        hideYear: state.admin.hideYear,
+        hidePhones: state.admin.hidePhones,
+        about: state.admin.about,
+        sessionId: state.admin.sessionId,
+        branches: state.admin.branches,
+        error: state.admin.error
+    }
+};
+
+const mapDispatchToProps = {
+    loadUser,
+    loadBranches,
+    updateUserPage,
+    deleteUserPage
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AdminUserPageUpdate);
