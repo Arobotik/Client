@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {validateConnection} from '../../Helpers/validators';
 import {getMyLastVisited, getMyRequests, loadMyPage, setRequest} from "../../Redux/actions";
 import {connect} from "react-redux";
+import {Button, Image, MiniImage, NoImage, Table, TableButton, Td} from "../../Styles";
 
 class MyPage extends Component {
     state= {
@@ -57,7 +58,7 @@ class MyPage extends Component {
                     {
                         this.props.avatarPath === ''
                             ? <p>No avatar</p>
-                            : <img src={this.props.avatarPath} alt={'avatar'}/>
+                            : <Image src={this.props.avatarPath} alt={'avatar'}/>
                     }
                     <p>Name: {this.props.name}</p>
                     <p>Birth Date: {this.props.birthDate} </p>
@@ -82,42 +83,43 @@ class MyPage extends Component {
                         ? <button onClick={this.onRequestAccess} type="button">Request Access</button>
                         : <br />
                     }
-                    <button onClick={() => window.location.assign('http://localhost:3000/app/mypageupdate')} type="button">Change Data</button><br/>
-                    <button onClick={() => window.location.assign('http://localhost:3000/app/book')} type="button">Back</button><br/>
+                    <Button onClick={() => window.location.assign('http://localhost:3000/app/mypageupdate')} type="button">Change Data</Button><br/>
+                    <Button onClick={() => window.location.assign('http://localhost:3000/app/book')} type="button">Back</Button><br/>
                     <strong>Requests</strong>
                     {this.props.requests === null || this.props.requests === [] || this.props.requests === undefined
                         ? 'None'
-                        : <table>{
+                        : <Table>{
                             <tbody>{
                                 this.props.requests.map(item => {
-                                    return <tr key={item}>
-                                        <td>
-                                            {item[1]}
-                                        </td>
-                                        <td>
-                                            <button onClick={() => this.onRequestAction(item[0], true)}>Accept</button>
-                                        </td>
-                                        <td>
-                                            <button onClick={() => this.onRequestAction(item[0], false)}>Refuse</button>
-                                        </td>
-                                    </tr>
-                                })
+                                    return(
+                                        <tr key={item}>
+                                            <Td>
+                                                {item[1]}
+                                            </Td>
+                                            <Td>
+                                                <TableButton onClick={() => this.onRequestAction(item[0], true)}>Accept</TableButton>
+                                            </Td>
+                                            <Td>
+                                                <TableButton onClick={() => this.onRequestAction(item[0], false)}>Refuse</TableButton>
+                                            </Td>
+                                        </tr>
+                                    )})
                             }
                             </tbody>
                         }
-                        </table>
+                        </Table>
                     }
                     <strong>Last visited pages:</strong>
                     {this.props.lastVisited === undefined || this.props.lastVisited.length === 0
                         ? 'None'
                         : <div>
                             {this.props.lastVisited.length > 3
-                                ? <button onClick={() =>
+                                ? <Button onClick={() =>
                                     this.setState({carouselPage: this.state.carouselPage > 0
                                             ? this.state.carouselPage - 1
-                                            : Math.floor(this.props.lastVisited.length / 3),
+                                            : Math.floor(this.props.lastVisited.length / 3) - 1,
                                     })}
-                                > Prev </button>
+                                > Prev </Button>
                                 : ''
                             }
                             {
@@ -127,21 +129,23 @@ class MyPage extends Component {
                                         : '';
                                     let avatarPath = avatar !== '' ? URL.createObjectURL(avatar) : '';
                                     return (avatarPath !== ''
-                                            ? <img src={avatarPath}
+                                            ? <MiniImage src={avatarPath}
                                                   onClick={() => this.onLinkNameClick(item[0])}
-                                                  width={100} height={100}
                                                   key={item[0]} alt={item[1]}/>
-                                            : <button onClick={() => this.onLinkNameClick(item[0])} key={item[0]}>{item[1]}</button>
+                                            : <MiniImage src={"../empty-avatar.png"}
+                                                         onClick={() => this.onLinkNameClick(item[0])}
+                                                         key={item[0]}
+                                            />
                                              );
                                 })
                             }
                             {this.props.lastVisited.length > 3
-                                ? <button onClick={() =>
-                                    this.setState({carouselPage: this.state.carouselPage < Math.floor(this.props.lastVisited.length / 3)
+                                ? <Button onClick={() =>
+                                    this.setState({carouselPage: this.state.carouselPage < Math.floor(this.props.lastVisited.length / 3) - 1
                                             ? this.state.carouselPage + 1
                                             : 0,
                                     })}
-                                > Next </button>
+                                > Next </Button>
                                 : ''
                             }
                         </div>

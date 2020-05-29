@@ -3,8 +3,8 @@ import Canvas from "../../Components/Canvas";
 import Cookies from 'js-cookie'
 import LoginComponent from "../../Components/LoginComponent";
 import {validateNewLoginData, validateNewUserData} from '../../Helpers/validators';
-import InputElement from 'react-input-mask';
 import {getBranches, setNewUser} from '../../Helpers/fetches';
+import {Button, Input, InputElementStyled} from "../../Styles";
 
 class Register extends React.Component {
     state = {login: '', password: '', error: '', page: 1};
@@ -124,8 +124,8 @@ class Register extends React.Component {
                             <strong>Registration:</strong>
                         </h1>
                         <LoginComponent/>
-                        <button type="submit">Continue</button>
-                        <button onClick={() => window.location.assign('http://localhost:3000/app/login')} type="button">Back</button>
+                        <Button type="submit">Continue</Button>
+                        <Button onClick={() => window.location.assign('http://localhost:3000/app/login')} type="button">Back</Button>
                     </form>
                     {this.state.error !== ''
                         ? <p style={{color: "red"}}>{this.state.error}</p>
@@ -141,16 +141,17 @@ class Register extends React.Component {
                         <p>
                             <strong>*Name:</strong>
                         </p>
-                        <input
+                        <Input
                             type="text"
                             value={this.state.name}
                             name={"name"}
                             onChange={this.changeInputHandler}
+                            maxLength={60}
                         />
                         <p>
                             <strong>*Birth Date:</strong>
                         </p>
-                        <input
+                        <Input
                             type="date"
                             value={this.state.birthDate}
                             name={"birthDate"}
@@ -164,7 +165,7 @@ class Register extends React.Component {
                         <p>
                             <strong>*Work Phone:</strong>
                         </p>
-                        <InputElement
+                        <InputElementStyled
                             mask="+7(999)999-99-99"
                             value={this.state.workPhone}
                             name={"workPhone"}
@@ -174,7 +175,7 @@ class Register extends React.Component {
                         <p>
                             <strong>*Private Phone:</strong>
                         </p>
-                        <InputElement
+                        <InputElementStyled
                             mask="+7(999)999-99-99"
                             value={this.state.privatePhone1}
                             name={"privatePhone1"}
@@ -184,21 +185,21 @@ class Register extends React.Component {
                         <p>
                             <strong>Additional private Phones:</strong>
                         </p>
-                        <InputElement
+                        <InputElementStyled
                             mask="+7(999)999-99-99"
                             value={this.state.privatePhone2}
                             name={"privatePhone2"}
                             onChange={this.changeInputHandler}
                             placeholder="Private Phone 2" ref="privatePhone2"
                         /><br/>
-                        <InputElement
+                        <InputElementStyled
                             mask="+7(999)999-99-99"
                             value={this.state.privatePhone3}
                             name={"privatePhone3"}
                             onChange={this.changeInputHandler}
                             placeholder="Private Phone 3" ref="privatePhone3"
                         />
-                        <input
+                        <Input
                             type="checkbox"
                             checked={this.state.hidePhones}
                             onChange={e => this.setState({hidePhones: e.target.checked})}
@@ -224,34 +225,37 @@ class Register extends React.Component {
                         <p>
                             <strong>Position:</strong>
                         </p>
-                        <input
+                        <Input
                             type="text"
                             value={this.state.position}
                             name={"position"}
                             onChange={this.changeInputHandler}
+                            maxLength={20}
                         />
                         <p>
                             <strong>Work Place:</strong>
                         </p>
-                        <input
+                        <Input
                             type="text"
                             value={this.state.workPlace}
                             name={"workPlace"}
                             onChange={this.changeInputHandler}
+                            maxLength={20}
                         />
                         <p>
                             <strong>About:</strong>
                         </p>
-                        <input
+                        <Input
                             type="text"
                             value={this.state.about}
                             name={"about"}
                             onChange={this.changeInputHandler}
+                            maxLength={100}
                         />
                         <p>
                             <strong>Avatar:</strong>
                         </p>
-                        <input
+                        <Input
                             type="file"
                             id={"avatar"}
                             onChange={e => {
@@ -264,8 +268,8 @@ class Register extends React.Component {
                                 ? <p>No avatar</p>
                                 : <Canvas avatarPath={this.state.avatarPath} ref={this.canvasRef}/>
                         }
-                        <button type="submit">Continue</button>
-                        <button onClick={() => this.setState({page: this.state.page - 1})} type="button">Back</button>
+                        <Button type="submit">Continue</Button>
+                        <Button onClick={() => this.setState({page: this.state.page - 1})} type="button">Back</Button>
                     </form>
                     {this.state.error !== ''
                         ? <p style={{color: "red"}}>{this.state.error}</p>
@@ -280,8 +284,8 @@ class Register extends React.Component {
                         <p>
                             <strong>Are you sure?</strong>
                         </p>
-                        <button type="submit">Continue</button>
-                        <button onClick={() => this.setState({page: this.state.page - 1})} type="button">Back</button>
+                        <Button type="submit">Continue</Button>
+                        <Button onClick={() => this.setState({page: this.state.page - 1})} type="button">Back</Button>
                     </form>
                 </div>
             )

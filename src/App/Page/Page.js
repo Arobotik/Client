@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {loadUserPage, requestAccess} from "../../Redux/actions";
 import {connect} from "react-redux";
 import {validateConnection} from "../../Helpers/validators";
+import {Button, Image} from "../../Styles";
 
 class Page extends Component {
     loaded = false;
@@ -29,7 +30,7 @@ class Page extends Component {
                     {
                         this.props.avatarPath === ''
                             ? <p>No avatar</p>
-                            : <img src={this.props.avatarPath} alt={'avatar'}/>
+                            : <Image src={this.props.avatarPath} alt={'avatar'}/>
                     }
                     <h1>Name: {this.props.name}</h1>
                     <p>Birth Date: {this.props.birthDate} </p>
@@ -50,9 +51,9 @@ class Page extends Component {
                     <p>Branch: {this.props.branch === null ? '' : this.props.branch}</p>
                     <p>Work Place: {this.props.workPlace === null ? '' : this.props.workPlace}</p>
                     <p>About: {this.props.about === null ? '' : this.props.about}</p>
-                    <button onClick={() => window.location.assign('http://localhost:3000/app/book')} type="button">Back</button>
+                    <Button onClick={() => window.location.assign('http://localhost:3000/app/book')} type="button">Back</Button>
                     {this.props.privatePhone1 === undefined
-                        ? <button onClick={this.onRequestAccess} type="button">Request Access</button>
+                        ? <Button onClick={this.onRequestAccess} type="button">Request Access</Button>
                         : <br />
                     }
                     {this.props.answer !== ''

@@ -3,6 +3,7 @@ import Cookies from 'js-cookie';
 import LoginComponent from "../../Components/LoginComponent";
 import {connect} from 'react-redux';
 import {appLogin, onResetState} from "../../Redux/actions";
+import {Button} from "../../Styles";
 
 class Login extends Component {
     state = {
@@ -25,10 +26,10 @@ class Login extends Component {
                         <strong>Welcome</strong>
                     </h1>
                     <LoginComponent/>
-                    <button type="submit">Login</button>
-                    <button onClick={() => window.location.assign('http://localhost:3000/app/register')}
+                    <Button type="submit">Login</Button>
+                    <Button onClick={() => window.location.assign('http://localhost:3000/app/register')}
                             type="button">Register
-                    </button>
+                    </Button>
                 </form>
                 {this.props.error !== ''
                     ? <p style={{color: "red"}}>{this.props.error}</p>

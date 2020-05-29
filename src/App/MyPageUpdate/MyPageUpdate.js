@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import Canvas from "../../Components/Canvas";
 import {validateConnection} from '../../Helpers/validators';
-import InputElement from "react-input-mask";
 import {loadBranches, loadMyPage, updateUserPage} from "../../Redux/actions";
 import {connect} from "react-redux";
+import {Button, Input, InputElementStyled, Select} from "../../Styles";
 
 let globalVar;
 
@@ -94,34 +94,37 @@ class MyPageUpdate extends Component {
                     <p>
                         <strong>Login:</strong>
                     </p>
-                    <input
+                    <Input
                         type="text"
                         value={this.state.login ? this.state.login : ''}
                         name={"login"}
                         onChange={this.changeInputHandler}
+                        maxLength={25}
                     />
                     <p>
                         <strong>Password:</strong>
                     </p>
-                    <input
+                    <Input
                         type="text"
                         value={this.state.password ? this.state.password : ''}
                         name={"password"}
                         onChange={this.changeInputHandler}
+                        maxLength={25}
                     /><br/>
                     <p>
                         <strong>*Name:</strong>
                     </p>
-                    <input
+                    <Input
                         type="text"
                         value={this.state.name ? this.state.name : ''}
                         name={"name"}
                         onChange={this.changeInputHandler}
+                        maxLength={60}
                     />
                     <p>
                         <strong>*Birth Date:</strong>
                     </p>
-                    <input
+                    <Input
                         type="date"
                         value={this.state.birthDate ? this.state.birthDate : ''}
                         name={"birthDate"}
@@ -135,7 +138,7 @@ class MyPageUpdate extends Component {
                     <p>
                         <strong>*Work Phone:</strong>
                     </p>
-                    <InputElement
+                    <InputElementStyled
                         mask="+7(999)999-99-99"
                         value={this.state.workPhone ? this.state.workPhone : ''}
                         name={"workPhone"}
@@ -145,7 +148,7 @@ class MyPageUpdate extends Component {
                     <p>
                         <strong>*Private Phone:</strong>
                     </p>
-                    <InputElement
+                    <InputElementStyled
                         mask="+7(999)999-99-99"
                         value={this.state.privatePhone1 ? this.state.privatePhone1 : ''}
                         name={"privatePhone1"}
@@ -155,14 +158,14 @@ class MyPageUpdate extends Component {
                     <p>
                         <strong>Additional private Phones:</strong>
                     </p>
-                    <InputElement
+                    <InputElementStyled
                         mask="+7(999)999-99-99"
                         value={this.state.privatePhone2 ? this.state.privatePhone2 : ''}
                         name={"privatePhone2"}
                         onChange={this.changeInputHandler}
                         placeholder="Private Phone 2" ref="privatePhone2"
                     /><br/>
-                    <InputElement
+                    <InputElementStyled
                         mask="+7(999)999-99-99"
                         value={this.state.privatePhone3 ? this.state.privatePhone3 : ''}
                         name={"privatePhone3"}
@@ -178,7 +181,7 @@ class MyPageUpdate extends Component {
                         <strong>Branch:</strong>
                     </p>
                     <p>
-                        <select
+                        <Select
                             value={this.state.branch !== '' && this.state.branch !== 'None'
                                 ? this.state.branch
                                 : ''
@@ -193,34 +196,37 @@ class MyPageUpdate extends Component {
                                     return <option value={item[1]} key={item[0]}>{item[1]}</option>
                                 })
                             }
-                        </select>
+                        </Select>
                     </p>
                     <p>
                         <strong>Position:</strong>
                     </p>
-                    <input
+                    <Input
                         type="text"
                         value={this.state.position === null ? '' : this.state.position ? this.state.position : ''}
                         name={"position"}
                         onChange={this.changeInputHandler}
+                        maxLength={20}
                     />
                     <p>
                         <strong>Work Place:</strong>
                     </p>
-                    <input
+                    <Input
                         type="text"
                         value={this.state.workPlace === null ? '' : this.state.workPlace ? this.state.workPlace : ''}
                         name={"workPlace"}
                         onChange={this.changeInputHandler}
+                        maxLength={20}
                     />
                     <p>
                         <strong>About:</strong>
                     </p>
-                    <input
+                    <Input
                         type="text"
                         value={this.state.about === null ? '' : this.state.about ? this.state.about : ''}
                         name={"about"}
                         onChange={this.changeInputHandler}
+                        maxLength={100}
                     /><br/>
                     <p>
                         <strong>Avatar:</strong>
@@ -242,10 +248,10 @@ class MyPageUpdate extends Component {
                             ? <p>No avatar</p>
                             : <Canvas avatarPath={this.state.avatarPath} ref={this.canvasEditRef}/>
                     }
-                    <button type="submit">Confirm</button>
-                    <button onClick={() => window.location.assign('http://localhost:3000/app/mypage')}
+                    <Button type="submit">Confirm</Button>
+                    <Button onClick={() => window.location.assign('http://localhost:3000/app/mypage')}
                             type="button">Back
-                    </button>
+                    </Button>
                     <br/>
                 </form>
                 {this.props.error !== ''

@@ -3,6 +3,7 @@ import {validateConnection} from '../../Helpers/validators';
 import BookSite from "../../Components/BookSite";
 import {loadBook} from "../../Redux/actions";
 import {connect} from "react-redux";
+import {Button, Input, PaginationButton} from "../../Styles";
 
 class Book extends Component {
     state = {
@@ -46,19 +47,19 @@ class Book extends Component {
             }
             return (
                 <div className="Book">
-                    <button onClick={e => this.onLinkNameClick(this.props.id, true)} type="button">My Page</button><br/>
-                    <button onClick={() => {
+                    <Button onClick={e => this.onLinkNameClick(this.props.id, true)} type="button">My Page</Button><br/>
+                    <Button onClick={() => {
                         this.setState({usersSortByAsc: !this.state.usersSortByAsc});
                         this.loaded = false;}}
                         type="button"
                     >
-                        {this.props.usersSortByAsc
+                        {this.state.usersSortByAsc
                             ? 'Sort by name DESC'
                             : 'Sort by name ASC'
                         }
-                    </button><br/>
+                    </Button><br/>
                     <strong>Find users:</strong>
-                    <input
+                    <Input
                         type="text"
                         value={this.state.filter}
                         onChange={e => {
@@ -76,15 +77,15 @@ class Book extends Component {
                     {this.makePagination().map(item => {
                         return item === Number(this.props.bookPageCurrent)
                             ? item + 1
-                            : (<button value={item}
+                            : (<PaginationButton value={item}
                                        key={item}
                                        onClick={e => {this.setState({bookPageCurrent: e.target.value}); this.loaded = false;}}
                                        type="button">{item + 1}
-                            </button>)
+                            </PaginationButton>)
                     })
                     }
                     <br/>
-                    <button onClick={this.onExitButtonClick} type="button">Exit</button>
+                    <Button onClick={this.onExitButtonClick} type="button">Exit</Button>
                 </div>
             )
         }

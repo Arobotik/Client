@@ -12,6 +12,7 @@ import RouteSite from './RouteSite';
 
 import * as serviceWorker from './serviceWorker';
 import {loadState, saveState} from "./Redux/localStorage";
+import {Main} from "./Styles";
 const persistedState = loadState();
 const store = createStore(rootReducer, persistedState, applyMiddleware(thunk));
 
@@ -26,11 +27,13 @@ const hashHistory = createBrowserHistory();
 const history = syncHistoryWithStore(hashHistory, store);
 
 const router = (
-    <Provider store={store}>
-      <Router history={history}>
-        <RouteSite />
-      </Router>
-    </Provider>
+    <Main>
+        <Provider store={store}>
+          <Router history={history}>
+            <RouteSite />
+          </Router>
+        </Provider>
+    </Main>
 );
 
 ReactDOM.render(
