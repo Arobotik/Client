@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 import LoginComponent from "../../Components/LoginComponent";
 import {connect} from 'react-redux';
 import {appLogin, onResetState} from "../../Redux/actions";
-import {Button} from "../../Styles";
+import {Button, Error} from "../../Styles";
 
 class Login extends Component {
     state = {
@@ -32,7 +32,7 @@ class Login extends Component {
                     </Button>
                 </form>
                 {this.props.error !== ''
-                    ? <p style={{color: "red"}}>{this.props.error}</p>
+                    ? <Error>{this.props.error}</Error>
                     : ''
                 }
             </div>

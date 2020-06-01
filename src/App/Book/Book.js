@@ -75,7 +75,9 @@ class Book extends Component {
                     }
                     <br/>
                     {this.makePagination().map(item => {
-                        return item === Number(this.props.bookPageCurrent)
+                        console.log('item', item);
+                        console.log('num', Number(this.state.bookPageCurrent));
+                        return item === Number(this.state.bookPageCurrent)
                             ? item + 1
                             : (<PaginationButton value={item}
                                        key={item}

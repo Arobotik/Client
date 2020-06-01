@@ -100,11 +100,6 @@ export const MiniImage = styled(Image)`
     width: 100px;
 `;
 
-export const NoImage = styled.div`
-    display: inline-block;
-    height: 100px;
-    width: 100px;
-    padding: 0;
-    border: 1px solid #008ba3;
-    border-radius: 8px;  
+export const Error = styled.p`
+    background: #62efff;
 `;

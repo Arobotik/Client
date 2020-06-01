@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {validateAdminConnection} from '../../Helpers/validators';
 import {loadRequests, updateRequests} from "../../Redux/adminActions";
 import {connect} from "react-redux";
+import {Button, PaginationButton, Table, TableButton} from "../../Styles";
 
 let globalVar;
 
@@ -47,51 +48,51 @@ class AdminRequests extends Component {
             }
             return(
                 <div>
-                    <button onClick={() => window.location.assign(`http://localhost:3000/admin/book`)} type="button">Back</button><br/>
+                    <Button onClick={() => window.location.assign(`http://localhost:3000/admin/book`)} type="button">Back</Button><br/>
                     <strong>Requests</strong><br/>
-                    <button onClick={() => {this.setState({requestsSortByAsc: !this.state.requestsSortByAsc}); this.loaded = false;}}
+                    <Button onClick={() => {this.setState({requestsSortByAsc: !this.state.requestsSortByAsc}); this.loaded = false;}}
                             type="button"
                     >
                         {this.state.requestsSortByAsc
                             ? 'Sort by date DESC'
                             : 'Sort by date ASC'
                         }
-                    </button><br/>
+                    </Button><br/>
                     {this.state.requestsShowWithStatus !== ''
-                        ? <button onClick={() => {this.setState({requestsShowWithStatus: '', requestsPageCurrent: 0, }); this.loaded = false;}}
+                        ? <Button onClick={() => {this.setState({requestsShowWithStatus: '', requestsPageCurrent: 0, }); this.loaded = false;}}
                                   type="button"
                         >
                             Show all
-                        </button>
+                        </Button>
                         : ''
                     }
                     {this.state.requestsShowWithStatus !==1
-                        ? <button onClick={() => {this.setState({requestsShowWithStatus: 1, requestsPageCurrent: 0, }); this.loaded = false;}}
+                        ? <Button onClick={() => {this.setState({requestsShowWithStatus: 1, requestsPageCurrent: 0, }); this.loaded = false;}}
                                   type="button"
                         >
                             Show only accepted
-                        </button>
+                        </Button>
                         : ''
                     }
                     {this.state.requestsShowWithStatus !== 0
-                        ? <button onClick={() => {this.setState({requestsShowWithStatus: 0, requestsPageCurrent: 0, }); this.loaded = false;}}
+                        ? <Button onClick={() => {this.setState({requestsShowWithStatus: 0, requestsPageCurrent: 0, }); this.loaded = false;}}
                                   type="button"
                         >
                             Show only waiting
-                        </button>
+                        </Button>
                         : ''
                     }
                     {this.state.requestsShowWithStatus !== -1
-                        ? <button onClick={() => {this.setState({requestsShowWithStatus: -1, requestsPageCurrent: 0, }); this.loaded = false;}}
+                        ? <Button onClick={() => {this.setState({requestsShowWithStatus: -1, requestsPageCurrent: 0, }); this.loaded = false;}}
                                   type="button"
                         >
                             Show only rejected
-                        </button>
+                        </Button>
                         : ''
                     }
                     {this.state.requests === null || this.state.requests === undefined
                         ? 'None'
-                        : <table>{
+                        : <Table>{
                             <tbody>
                             <tr>
                                 <td>
@@ -120,13 +121,13 @@ class AdminRequests extends Component {
                                             {req[3]}
                                         </td>
                                         <td>
-                                            <button onClick={() => this.onRequestAction(req[0], req[2], 1)}>Accept</button>
+                                            <TableButton onClick={() => this.onRequestAction(req[0], req[2], 1)}>Accept</TableButton>
                                         </td>
                                         <td>
-                                            <button onClick={() => this.onRequestAction(req[0], req[2], 0)}>Wait</button>
+                                            <TableButton onClick={() => this.onRequestAction(req[0], req[2], 0)}>Wait</TableButton>
                                         </td>
                                         <td>
-                                            <button onClick={() => this.onRequestAction(req[0], req[2],-1)}>Refuse</button>
+                                            <TableButton onClick={() => this.onRequestAction(req[0], req[2],-1)}>Refuse</TableButton>
                                         </td>
                                         <td>
                                             {req[4]}
@@ -139,17 +140,17 @@ class AdminRequests extends Component {
                             }
                             </tbody>
                         }
-                        </table>
+                        </Table>
                     }
                     <br/>
                     {this.makePagination().map(item => {
                         return item === Number(this.state.requestsPageCurrent)
                             ? item + 1
-                            : (<button value={item}
+                            : (<PaginationButton value={item}
                                        key={item}
                                        onClick={e => {this.setState({requestsPageCurrent: e.target.value}); this.loaded = false;}}
                                        type="button">{item + 1}
-                            </button>)
+                            </PaginationButton>)
                     })
                     }
                     <br/>

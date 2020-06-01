@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {validateConnection} from '../../Helpers/validators';
 import {getMyLastVisited, getMyRequests, loadMyPage, setRequest} from "../../Redux/actions";
 import {connect} from "react-redux";
-import {Button, Image, MiniImage, NoImage, Table, TableButton, Td} from "../../Styles";
+import {Button, Image, MiniImage, Table, TableButton, Td} from "../../Styles";
 
 class MyPage extends Component {
     state= {

@@ -3,6 +3,7 @@ import {validateAdminConnection} from '../../Helpers/validators';
 import BookSite from "../../Components/BookSite";
 import {loadBook} from "../../Redux/adminActions"
 import {connect} from "react-redux";
+import {Button, Input, PaginationButton} from "../../Styles";
 
 class AdminBook extends Component {
     state= {
@@ -40,7 +41,7 @@ class AdminBook extends Component {
             return (
                 <div className="Book">
                     <strong>{this.state.getDeleted ? 'Deleted users' : 'Undeleted users'}</strong><br/>
-                    <button onClick={() => {
+                    <Button onClick={() => {
                         this.setState({usersSortByAsc: !this.state.usersSortByAsc});
                         this.loaded = false;}}
                             type="button"
@@ -49,9 +50,9 @@ class AdminBook extends Component {
                             ? 'Sort by name DESC'
                             : 'Sort by name ASC'
                         }
-                    </button><br/>
+                    </Button><br/>
                     <strong>Find users:</strong>
-                    <input
+                    <Input
                         type="text"
                         value={this.state.filter}
                         onChange={e => {
@@ -68,21 +69,21 @@ class AdminBook extends Component {
                     {this.makePagination().map(item => {
                         return item === Number(this.state.bookPageCurrent)
                             ? item + 1
-                            : (<button value={item}
+                            : (<PaginationButton value={item}
                                        key={item}
                                        onClick={e => {this.setState({bookPageCurrent: e.target.value}); this.loaded = false;}}
                                        type="button">{item + 1}
-                            </button>)
+                            </PaginationButton>)
                     })
                     }
                     <br/>
-                    <button onClick={() => window.location.assign('http://localhost:3000/admin/requests')} type="button">Requests</button>
-                    <button onClick={() => {this.setState({getDeleted: !this.state.getDeleted, bookPageCurrent: 0,}); this.loaded = false;}}
+                    <Button onClick={() => window.location.assign('http://localhost:3000/admin/requests')} type="button">Requests</Button>
+                    <Button onClick={() => {this.setState({getDeleted: !this.state.getDeleted, bookPageCurrent: 0,}); this.loaded = false;}}
                             type="button">
                         {this.state.getDeleted ? 'Get undeleted' : 'Get deleted'}
-                    </button>
-                    <button onClick={() => window.location.assign('http://localhost:3000/admin/branches')} type="button">Branches</button>
-                    <button onClick={this.onExitButtonClick} type="button">Exit</button>
+                    </Button>
+                    <Button onClick={() => window.location.assign('http://localhost:3000/admin/branches')} type="button">Branches</Button>
+                    <Button onClick={this.onExitButtonClick} type="button">Exit</Button>
                 </div>
             )
         }

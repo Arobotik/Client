@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {loadUserPage, requestAccess} from "../../Redux/actions";
 import {connect} from "react-redux";
 import {validateConnection} from "../../Helpers/validators";
-import {Button, Image} from "../../Styles";
+import {Button, Error, Image} from "../../Styles";
 
 class Page extends Component {
     loaded = false;
@@ -57,7 +57,7 @@ class Page extends Component {
                         : <br />
                     }
                     {this.props.answer !== ''
-                        ? <p style={{color: "green"}}>{this.props.answer}</p>
+                        ? <Error>{this.props.answer}</Error>
                         :''
                     }
                 </div>

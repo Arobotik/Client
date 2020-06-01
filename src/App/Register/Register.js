@@ -4,7 +4,7 @@ import Cookies from 'js-cookie'
 import LoginComponent from "../../Components/LoginComponent";
 import {validateNewLoginData, validateNewUserData} from '../../Helpers/validators';
 import {getBranches, setNewUser} from '../../Helpers/fetches';
-import {Button, Input, InputElementStyled} from "../../Styles";
+import {Button, Error, Input, InputElementStyled} from "../../Styles";
 
 class Register extends React.Component {
     state = {login: '', password: '', error: '', page: 1};
@@ -128,7 +128,7 @@ class Register extends React.Component {
                         <Button onClick={() => window.location.assign('http://localhost:3000/app/login')} type="button">Back</Button>
                     </form>
                     {this.state.error !== ''
-                        ? <p style={{color: "red"}}>{this.state.error}</p>
+                        ? <Error>{this.state.error}</Error>
                         :''
                     }
                 </div>
@@ -255,7 +255,7 @@ class Register extends React.Component {
                         <p>
                             <strong>Avatar:</strong>
                         </p>
-                        <Input
+                        <input
                             type="file"
                             id={"avatar"}
                             onChange={e => {
@@ -272,7 +272,7 @@ class Register extends React.Component {
                         <Button onClick={() => this.setState({page: this.state.page - 1})} type="button">Back</Button>
                     </form>
                     {this.state.error !== ''
-                        ? <p style={{color: "red"}}>{this.state.error}</p>
+                        ? <Error>{this.state.error}</Error>
                         :''
                     }
                 </div>

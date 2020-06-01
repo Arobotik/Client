@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import Canvas from "../../Components/Canvas";
 import {validateAdminConnection} from '../../Helpers/validators';
-import InputElement from "react-input-mask";
 import {loadBranches, loadUser, updateUserPage, deleteUserPage} from "../../Redux/adminActions";
 import {connect} from "react-redux";
+import {Button, Input, InputElementStyled, Select} from "../../Styles";
 
 let globalVar;
 
@@ -98,7 +98,7 @@ class AdminUserPageUpdate extends Component {
                     <p>
                         <strong>Login:</strong>
                     </p>
-                    <input
+                    <Input
                         type="text"
                         value={this.state.login ? this.state.login : ''}
                         name={"login"}
@@ -107,8 +107,8 @@ class AdminUserPageUpdate extends Component {
                     <p>
                         <strong>Password:</strong>
                     </p>
-                    <input
-                        type="text"
+                    <Input
+                        type="password"
                         value={this.state.password ? this.state.password : ''}
                         name={"password"}
                         onChange={this.changeInputHandler}
@@ -116,7 +116,7 @@ class AdminUserPageUpdate extends Component {
                     <p>
                         <strong>*Name:</strong>
                     </p>
-                    <input
+                    <Input
                         type="text"
                         value={this.state.name ? this.state.name : ''}
                         name={"name"}
@@ -125,7 +125,7 @@ class AdminUserPageUpdate extends Component {
                     <p>
                         <strong>*Birth Date:</strong>
                     </p>
-                    <input
+                    <Input
                         type="date"
                         value={this.state.birthDate ? this.state.birthDate : ''}
                         name={"birthDate"}
@@ -139,7 +139,7 @@ class AdminUserPageUpdate extends Component {
                     <p>
                         <strong>*Work Phone:</strong>
                     </p>
-                    <InputElement
+                    <InputElementStyled
                         mask="+7(999)999-99-99"
                         value={this.state.workPhone ? this.state.workPhone : ''}
                         name={"workPhone"}
@@ -149,7 +149,7 @@ class AdminUserPageUpdate extends Component {
                     <p>
                         <strong>*Private Phone:</strong>
                     </p>
-                    <InputElement
+                    <InputElementStyled
                         mask="+7(999)999-99-99"
                         value={this.state.privatePhone1 ? this.state.privatePhone1 : ''}
                         name={"privatePhone1"}
@@ -159,14 +159,14 @@ class AdminUserPageUpdate extends Component {
                     <p>
                         <strong>Additional private Phones:</strong>
                     </p>
-                    <InputElement
+                    <InputElementStyled
                         mask="+7(999)999-99-99"
                         value={this.state.privatePhone2 ? this.state.privatePhone2 : ''}
                         name={"privatePhone2"}
                         onChange={this.changeInputHandler}
                         placeholder="Private Phone 2" ref="privatePhone2"
                     /><br/>
-                    <InputElement
+                    <InputElementStyled
                         mask="+7(999)999-99-99"
                         value={this.state.privatePhone3 ? this.state.privatePhone3 : ''}
                         name={"privatePhone3"}
@@ -182,7 +182,7 @@ class AdminUserPageUpdate extends Component {
                         <strong>Branch:</strong>
                     </p>
                     <p>
-                        <select
+                        <Select
                             value={this.state.branch !== '' && this.state.branch !== 'None'
                                 ? this.state.branch
                                 : ''
@@ -197,12 +197,12 @@ class AdminUserPageUpdate extends Component {
                                     return <option value={item[1]} key={item[0]}>{item[1]}</option>
                                 })
                             }
-                        </select>
+                        </Select>
                     </p>
                     <p>
                         <strong>Position:</strong>
                     </p>
-                    <input
+                    <Input
                         type="text"
                         value={this.state.position === null ? '' : this.state.position ? this.state.position : ''}
                         name={"position"}
@@ -211,7 +211,7 @@ class AdminUserPageUpdate extends Component {
                     <p>
                         <strong>Work Place:</strong>
                     </p>
-                    <input
+                    <Input
                         type="text"
                         value={this.state.workPlace === null ? '' : this.state.workPlace ? this.state.workPlace : ''}
                         name={"workPlace"}
@@ -220,7 +220,7 @@ class AdminUserPageUpdate extends Component {
                     <p>
                         <strong>About:</strong>
                     </p>
-                    <input
+                    <Input
                         type="text"
                         value={this.state.about === null ? '' : this.state.about ? this.state.about : ''}
                         name={"about"}
@@ -242,13 +242,13 @@ class AdminUserPageUpdate extends Component {
                             ? <p>No avatar</p>
                             : <Canvas avatarPath={this.state.avatarPath} ref={this.canvasUserRef}/>
                     }
-                    <button type="submit">Confirm</button>
+                    <Button type="submit">Confirm</Button>
                     {
                         this.state.deleted
-                            ? <button onClick={() => this.onDeleteUser(false)} type="button">Undelete</button>
-                            : <button onClick={() => this.onDeleteUser(true)} type="button">Delete</button>
+                            ? <Button onClick={() => this.onDeleteUser(false)} type="button">Undelete</Button>
+                            : <Button onClick={() => this.onDeleteUser(true)} type="button">Delete</Button>
                     }
-                    <button onClick={() => window.location.assign('http://localhost:3000/admin/book')} type="button">Back</button>
+                    <Button onClick={() => window.location.assign('http://localhost:3000/admin/book')} type="button">Back</Button>
                 </form>
             </div>
         )

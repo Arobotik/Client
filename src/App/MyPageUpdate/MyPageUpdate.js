@@ -3,7 +3,7 @@ import Canvas from "../../Components/Canvas";
 import {validateConnection} from '../../Helpers/validators';
 import {loadBranches, loadMyPage, updateUserPage} from "../../Redux/actions";
 import {connect} from "react-redux";
-import {Button, Input, InputElementStyled, Select} from "../../Styles";
+import {Button, Error, Input, InputElementStyled, Select} from "../../Styles";
 
 let globalVar;
 
@@ -105,7 +105,7 @@ class MyPageUpdate extends Component {
                         <strong>Password:</strong>
                     </p>
                     <Input
-                        type="text"
+                        type="password"
                         value={this.state.password ? this.state.password : ''}
                         name={"password"}
                         onChange={this.changeInputHandler}
@@ -255,7 +255,7 @@ class MyPageUpdate extends Component {
                     <br/>
                 </form>
                 {this.props.error !== ''
-                    ? <p style={{color: "red"}}>{this.props.error}</p>
+                    ? <Error style={{color: "red"}}>{this.props.error}</Error>
                     : ''
                 }
             </div>

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {validateAdminConnection} from '../../Helpers/validators';
 import {loadBranches, updateBranches} from "../../Redux/adminActions";
 import {connect} from "react-redux";
+import {Button, Input, Table, TableButton} from "../../Styles";
 
 let globalVar;
 
@@ -61,7 +62,7 @@ class AdminBranches extends Component {
         let item = -1;
         return (
             <div>
-                <button onClick={() => {
+                <Button onClick={() => {
                     this.setState({branchesSortByAsc: !this.state.branchesSortByAsc});
                     this.loaded = false;
                 }}
@@ -71,9 +72,9 @@ class AdminBranches extends Component {
                         ? 'Sort by name DESC'
                         : 'Sort by name ASC'
                     }
-                </button>
+                </Button>
                 <br/>
-                <button onClick={() => {
+                <Button onClick={() => {
                     let branches = this.state.branches;
                     if (branches === null || branches === undefined) {
                         branches = [];
@@ -96,12 +97,12 @@ class AdminBranches extends Component {
                         toDeleteBranch: -1,
                     });
                 }} type="button">Add
-                </button>
+                </Button>
                 <br/>
                 <strong>Branches</strong>
                 {this.state.branches === null || this.state.branches === undefined || this.state.branches === []
                     ? 'None'
-                    : <table>{
+                    : <Table>{
                         <tbody>
                         <tr>
                             <td>
@@ -117,7 +118,7 @@ class AdminBranches extends Component {
                                 return <tr key={thisItem}>
                                     <td>
                                         {this.state.editedBranch === thisItem
-                                            ? <input
+                                            ? <Input
                                                 type="text"
                                                 value={this.state.editedBranchData}
                                                 onChange={e => this.setState({editedBranchData: e.target.value})}
@@ -128,7 +129,7 @@ class AdminBranches extends Component {
                                     <td>
                                         {
                                             this.state.editedBranch === thisItem
-                                                ? <button onClick={() => {
+                                                ? <TableButton onClick={() => {
                                                     req[1] = this.state.editedBranchData;
                                                     let editedBranch = this.state.editedBranch;
                                                     this.setState({
@@ -136,40 +137,40 @@ class AdminBranches extends Component {
                                                         branchesWereEdited: true,
                                                         toDeleteBranch: this.state.editedBranchData === '' ? editedBranch : -1,
                                                     });
-                                                }}>Confirm</button>
-                                                : <button onClick={() => {
+                                                }}>Confirm</TableButton>
+                                                : <TableButton onClick={() => {
                                                     let editedBranch = this.state.editedBranch;
                                                     this.setState({
                                                         editedBranch: thisItem,
                                                         editedBranchData: req[1],
                                                         toDeleteBranch: this.state.editedBranchData === '' ? editedBranch : -1,
                                                     });
-                                                }}>Edit</button>
+                                                }}>Edit</TableButton>
                                         }
                                     </td>
                                     <td>
-                                        <button onClick={() => {
+                                        <TableButton onClick={() => {
                                             this.setState({
                                                 editedBranch: -1,
                                                 toDeleteBranch: thisItem,
                                                 branchesWereEdited: true
                                             });
                                         }}>Delete
-                                        </button>
+                                        </TableButton>
                                     </td>
                                 </tr>
                             })
                         }
                         </tbody>
                     }
-                    </table>
+                    </Table>
                 }
                 {this.state.branchesWereEdited && this.state.branches !== []
-                    ? <button onClick={this.confirmBranchEdit}>Confirm changes</button>
+                    ? <Button onClick={this.confirmBranchEdit}>Confirm changes</Button>
                     : ''
                 }
-                <button onClick={() => window.location.assign('http://localhost:3000/admin/book')} type="button">Back
-                </button>
+                <Button onClick={() => window.location.assign('http://localhost:3000/admin/book')} type="button">Back
+                </Button>
                 <br/>
             </div>
         );

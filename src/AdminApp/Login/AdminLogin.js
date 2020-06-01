@@ -3,6 +3,7 @@ import Cookies from 'js-cookie';
 import LoginComponent from "../../Components/LoginComponent";
 import {connect} from "react-redux";
 import {adminLogin, onResetState} from "../../Redux/adminActions";
+import {Button, Error} from "../../Styles";
 
 class AdminLogin extends Component {
     state = {
@@ -25,10 +26,10 @@ class AdminLogin extends Component {
                         <strong>Welcome</strong>
                     </h1>
                     <LoginComponent/>
-                    <button type="submit">Login</button>
+                    <Button type="submit">Login</Button>
                 </form>
                 {this.state.error !== ''
-                    ? <p style={{color: "red"}}>{this.state.error}</p>
+                    ? <Error>{this.state.error}</Error>
                     : ''
                 }
             </div>

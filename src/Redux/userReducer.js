@@ -44,7 +44,7 @@ const initialState = {
 export const userReducer = (state = initialState, action) => {
     switch(action.type){
         case APP_LOGIN:{
-            return initialState;
+            return {...initialState, error: state?.error};
         }
         case APP_CORRECT_LOGIN:{
             return {...state, login: '', password: '', sessionId: action.payload.sessionId, id: action.payload.id}
